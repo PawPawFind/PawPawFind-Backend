@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+**/.DS_Store
+.AppleDouble
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Gradle
+.gradle/
+**/build/
+
+# Local environment files (keep examples)
+.env
+.env.*
+!.env.example
+!**/.env.example
