@@ -1,0 +1,57 @@
+# Frontend repo에 복사: `.github/workflows/deploy-frontend.yml`
+# repo 루트 기준 (PawPawFind-Frontend 등)
+
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-frontend
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # --- React/Vite 등 빌드가 있으면 주석 해제 ---
+      # - uses: actions/setup-node@v4
+      #   with:
+      #     node-version: "20"
+      #     cache: npm
+      # - run: npm ci && npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # 정적 HTML만: repo 루트 또는 public/ → S3
+      # 빌드 사용 시: dist/ 로 변경
+      - name: Sync to S3
+        run: |
+          SOURCE_DIR="."
+          # SOURCE_DIR="dist"   # npm run build 후
+
+          aws s3 sync "$SOURCE_DIR" "s3://${{ secrets.FRONTEND_S3_BUCKET }}/" \
+            --delete \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude "node_modules/*" \
+            --exclude ".DS_Store"
+
+          for file in $(find "$SOURCE_DIR" -maxdepth 3 -name "*.html" 2>/dev/null); do
+            rel="${file#./}"
+            aws s3 cp "$file" "s3://${{ secrets.FRONTEND_S3_BUCKET }}/$rel" \
+              --content-type "text/html; charset=utf-8" \
+              --cache-control "no-cache, no-store, must-revalidate"
+          done
+
+      # CloudFront 쓰면 주석 해제
+      # - run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"

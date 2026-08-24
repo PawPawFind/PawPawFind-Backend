@@ -1,0 +1,17 @@
+[Unit]
+Description=PawPawFind AI (FastAPI uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/home/ec2-user/PawPawFind-AI
+Environment=PATH=/home/ec2-user/.local/bin:/usr/local/bin:/usr/bin
+ExecStart=/home/ec2-user/.local/bin/uv run uvicorn app.main:app --host 127.0.0.1 --port 8000
+Restart=on-failure
+RestartSec=10
+StandardOutput=append:/home/ec2-user/logs/ai.log
+StandardError=append:/home/ec2-user/logs/ai.log
+
+[Install]
+WantedBy=multi-user.target
