@@ -3,6 +3,7 @@ package com.pawpawfind.backend.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.pawpawfind.backend.dto.ReportListItemResponse;
 import com.pawpawfind.backend.repository.ReportRepository;
 import com.pawpawfind.backend.repository.ReportPhotoRepository;
 import com.pawpawfind.backend.repository.ReportFeatureRepository;
@@ -10,7 +11,10 @@ import com.pawpawfind.backend.repository.ReportEmbeddingRepository;
 import com.pawpawfind.backend.entity.Reports;
 import com.pawpawfind.backend.entity.ReportPhotos;
 import com.pawpawfind.backend.entity.ReportFeatures;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 제보 저장/조회/수정/삭제.
@@ -57,16 +61,44 @@ public class ReportService {
         return saved;
     }
 
-    public Page<Reports> getReports(String reportType, Pageable pageable) {
+    public Page<ReportListItemResponse> getReports(String reportType, Pageable pageable) {
+        Page<Reports> reports;
         if (reportType == null || reportType.isBlank()) {
-            return reportRepository.findAllByOrderByCreatedAtDesc(pageable);
+            reports = reportRepository.findAllByOrderByCreatedAtDesc(pageable);
+        } else {
+            reports = reportRepository.findByReportTypeOrderByCreatedAtDesc(reportType, pageable);
         }
-        return reportRepository.findByReportTypeOrderByCreatedAtDesc(reportType, pageable);
+        return toListItems(reports);
     }
 
-    public Page<Reports> getMyReports(Long userId, Pageable pageable) {
-        return reportRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
+    public Page<ReportListItemResponse> getMyReports(Long userId, Pageable pageable) {
+        return toListItems(reportRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable));
     }
+
+	private Page<ReportListItemResponse> toListItems(Page<Reports> reports) {
+		List<Long> reportIds = reports.getContent().stream()
+				.map(Reports::getReportId)
+				.toList();
+		Map<Long, String> thumbnails = loadThumbnailUrls(reportIds);
+		return reports.map(report -> ReportListItemResponse.from(
+				report,
+				thumbnails.get(report.getReportId())));
+	}
+
+	/** 제보별 sortOrder 최소(없으면 id 최소) 사진을 썸네일로 쓴다. */
+	private Map<Long, String> loadThumbnailUrls(List<Long> reportIds) {
+		Map<Long, String> thumbnails = new HashMap<>();
+		if (reportIds.isEmpty()) {
+			return thumbnails;
+		}
+		List<ReportPhotos> photos = reportPhotoRepository.findByReportIdIn(reportIds);
+		photos.stream()
+				.sorted(Comparator
+						.comparing(ReportPhotos::getSortOrder, Comparator.nullsLast(Integer::compareTo))
+						.thenComparing(ReportPhotos::getId, Comparator.nullsLast(Long::compareTo)))
+				.forEach(photo -> thumbnails.putIfAbsent(photo.getReportId(), photo.getPhotoUrl()));
+		return thumbnails;
+	}
 
     public Reports getReport(Long reportId){
         return reportRepository.findById(reportId).orElse(null);

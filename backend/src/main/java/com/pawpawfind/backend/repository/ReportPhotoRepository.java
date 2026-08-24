@@ -11,6 +11,8 @@ import com.pawpawfind.backend.entity.ReportPhotos;
 public interface ReportPhotoRepository extends JpaRepository<ReportPhotos, Long> {
     List<ReportPhotos> findByReportId(Long reportId);
 
+	List<ReportPhotos> findByReportIdIn(List<Long> reportIds);
+
     void deleteByReportId(Long reportId);
 
     long countByReportId(Long reportId);
