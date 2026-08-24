@@ -23,7 +23,8 @@ public class SearchAreaAiProperties implements InitializingBean {
 		} catch (IllegalArgumentException exception) {
 			throw new IllegalStateException("ai.service.url must be a valid HTTP URL");
 		}
-		if (!("http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme()))) {
+		if (!("http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme()))
+				|| uri.getHost() == null) {
 			throw new IllegalStateException("ai.service.url must be a valid HTTP URL");
 		}
 		url = url.trim().replaceAll("/+$", "");
