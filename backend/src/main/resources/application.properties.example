@@ -1,0 +1,30 @@
+# Copy to application.properties (gitignored). Do not commit secrets.
+
+spring.application.name=backend
+
+# Local H2 (default for bootRun without prod profile)
+spring.datasource.url=jdbc:h2:mem:pawpawfind
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.hibernate.ddl-auto=update
+spring.h2.console.enabled=true
+
+# Public animal API
+animal.api.key=YOUR_ENCODING_KEY
+animal.api.url=https://apis.data.go.kr/1543061/abandonmentPublicService_v2/abandonmentPublic_v2
+
+# Kakao login
+kakao.rest-api-key=YOUR_KAKAO_REST_API_KEY
+kakao.redirect-uri=http://localhost:5173/callback
+
+# JWT
+jwt.secret=CHANGE_ME_TO_A_LONG_RANDOM_SECRET
+
+# AI service (local or EC2 localhost via nginx)
+ai.service.url=http://127.0.0.1:8000
+
+# S3 report photo uploads
+aws.region=ap-northeast-2
+aws.s3.bucket=pawpawfind-report-photos
+aws.s3.upload-prefix=reports/
