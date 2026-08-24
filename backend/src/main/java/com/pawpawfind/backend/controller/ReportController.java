@@ -1,6 +1,7 @@
 package com.pawpawfind.backend.controller;
 
 import com.pawpawfind.backend.config.JwtAuthFilter;
+import com.pawpawfind.backend.dto.ReportListItemResponse;
 import com.pawpawfind.backend.entity.ReportPhotos;
 import com.pawpawfind.backend.entity.ReportFeatures;
 import com.pawpawfind.backend.entity.Reports;
@@ -47,7 +48,7 @@ public class ReportController{
     }
 
     @GetMapping("/api/reports/me")
-    public ResponseEntity<Page<Reports>> getMyReports(
+    public ResponseEntity<Page<ReportListItemResponse>> getMyReports(
             @RequestAttribute(value = JwtAuthFilter.USER_ID_ATTR, required = false) Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
@@ -59,7 +60,7 @@ public class ReportController{
     }
 
     @GetMapping("/api/reports")
-    public ResponseEntity<Page<Reports>> getReports(
+    public ResponseEntity<Page<ReportListItemResponse>> getReports(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) String reportType) {
