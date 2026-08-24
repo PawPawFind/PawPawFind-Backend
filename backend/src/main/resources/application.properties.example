@@ -27,6 +27,10 @@ jwt.secret=CHANGE_ME_TO_A_LONG_RANDOM_SECRET
 
 # AI service (local or EC2 localhost via nginx)
 ai.service.url=http://127.0.0.1:8000
+# 연결 제한 시간. 밀리초 단위의 양수
+ai.service.connect-timeout-millis=2000
+# 응답 제한 시간. AI Overpass 기본 제한(10초)보다 길게 설정
+ai.service.read-timeout-millis=15000
 
 # S3 report photo uploads
 aws.region=ap-northeast-2
