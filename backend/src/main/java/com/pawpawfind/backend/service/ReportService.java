@@ -2,7 +2,9 @@ package com.pawpawfind.backend.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import com.pawpawfind.backend.dto.ReportListItemResponse;
 import com.pawpawfind.backend.repository.ReportRepository;
 import com.pawpawfind.backend.repository.ReportPhotoRepository;
@@ -11,10 +13,12 @@ import com.pawpawfind.backend.repository.ReportEmbeddingRepository;
 import com.pawpawfind.backend.entity.Reports;
 import com.pawpawfind.backend.entity.ReportPhotos;
 import com.pawpawfind.backend.entity.ReportFeatures;
+import com.pawpawfind.backend.entity.UserRoles;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 제보 저장/조회/수정/삭제.
@@ -193,4 +197,41 @@ public class ReportService {
         existing.setKeyword(reportFeature.getKeyword());
         return reportFeatureRepository.save(existing);
     }
+
+	/**
+	 * 제보 수정/삭제 권한.
+	 * ADMIN: 전체 가능. USER: 본인 userId 제보만. 비로그인/타인: 403.
+	 */
+	public void assertCanManageReport(Long reportId, Long userId, String role) {
+		if (userId == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+		}
+		Reports report = reportRepository.findById(reportId).orElse(null);
+		if (report == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "제보를 찾을 수 없습니다.");
+		}
+		if (UserRoles.isAdmin(role)) {
+			return;
+		}
+		if (report.getUserId() != null && Objects.equals(report.getUserId(), userId)) {
+			return;
+		}
+		throw new ResponseStatusException(HttpStatus.FORBIDDEN, "이 제보를 수정/삭제할 권한이 없습니다.");
+	}
+
+	public void assertCanManageReportPhoto(Long reportPhotoId, Long userId, String role) {
+		ReportPhotos photo = reportPhotoRepository.findById(reportPhotoId).orElse(null);
+		if (photo == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사진을 찾을 수 없습니다.");
+		}
+		assertCanManageReport(photo.getReportId(), userId, role);
+	}
+
+	public void assertCanManageReportFeature(Long reportFeatureId, Long userId, String role) {
+		ReportFeatures feature = reportFeatureRepository.findById(reportFeatureId).orElse(null);
+		if (feature == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "특징을 찾을 수 없습니다.");
+		}
+		assertCanManageReport(feature.getReportId(), userId, role);
+	}
 }

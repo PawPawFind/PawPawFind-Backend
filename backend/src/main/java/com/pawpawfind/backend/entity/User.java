@@ -14,7 +14,7 @@ import jakarta.persistence.UniqueConstraint;
 
 /**
  * 소셜 로그인 사용자. 카카오/구글 OAuth 연동용.
- * 비밀번호는 저장하지 않는다.
+ * role: USER(기본) / ADMIN(설정에 등록된 카카오 ID).
  */
 @Entity
 @Table(
@@ -42,6 +42,10 @@ public class User {
 	@Column(name = "nickname", length = 50, nullable = false)
 	private String nickname;
 
+	/** USER 또는 ADMIN */
+	@Column(name = "role", length = 20, nullable = false)
+	private String role = UserRoles.USER;
+
 	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt;
 
@@ -53,6 +57,9 @@ public class User {
 		LocalDateTime now = LocalDateTime.now();
 		this.createdAt = now;
 		this.updatedAt = now;
+		if (this.role == null || this.role.isBlank()) {
+			this.role = UserRoles.USER;
+		}
 	}
 
 	@PreUpdate
@@ -90,6 +97,14 @@ public class User {
 
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	public LocalDateTime getCreatedAt() {
