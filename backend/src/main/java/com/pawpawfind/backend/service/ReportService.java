@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import com.pawpawfind.backend.dto.ReportListItemResponse;
 import com.pawpawfind.backend.repository.ReportRepository;
@@ -117,6 +118,7 @@ public class ReportService {
         return reportPhotoRepository.findById(reportPhotoId).orElse(null);
     }
 
+    @Transactional
     public void deleteReport(Long reportId){
         reportEmbeddingRepository.deleteByReportId(reportId);
         reportPhotoRepository.deleteByReportId(reportId);
@@ -124,6 +126,7 @@ public class ReportService {
         reportRepository.deleteById(reportId);
     }
 
+    @Transactional
     public void deleteReportPhoto(Long reportPhotoId){
         reportEmbeddingRepository.deleteByReportPhotoId(reportPhotoId);
         reportPhotoRepository.deleteById(reportPhotoId);
@@ -184,6 +187,7 @@ public class ReportService {
         return reportFeatureRepository.findById(reportFeatureId).orElse(null);
     }
 
+    @Transactional
     public void deleteReportFeature(Long reportFeatureId) {
         reportFeatureRepository.deleteById(reportFeatureId);
     }
