@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 /**
@@ -102,6 +104,18 @@ public class Animal {
 
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
+
+	@PrePersist
+	public void onCreate() {
+		LocalDateTime now = LocalDateTime.now();
+		this.createdAt = now;
+		this.updatedAt = now;
+	}
+
+	@PreUpdate
+	public void onUpdate() {
+		this.updatedAt = LocalDateTime.now();
+	}
 
 	public String getDesertionNo() {
 		return desertionNo;

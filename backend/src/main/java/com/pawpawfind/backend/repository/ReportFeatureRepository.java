@@ -9,5 +9,9 @@ import com.pawpawfind.backend.entity.ReportFeatures;
 /** 제보 특징 태그. findByReportId 로 해당 제보만 조회. */
 public interface ReportFeatureRepository extends JpaRepository<ReportFeatures, Long> {
 
+	void deleteByReportId(Long reportId);
+
 	List<ReportFeatures> findByReportId(Long reportId);
+
+	long countByReportIdAndCategory(Long reportId, String category);
 }
