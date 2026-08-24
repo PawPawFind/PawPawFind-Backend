@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * 실종(LOST) / 목격(FOUND) 제보 API.
- * 사진·특징 태그는 제보 ID를 만든 뒤 별도 테이블에 저장한다.
+ * 수정/삭제는 본인 또는 ADMIN만 가능.
  */
 @RestController
 public class ReportController{
@@ -71,9 +71,16 @@ public class ReportController{
     // --- 사진 (URL만 저장) ---
 
     @PostMapping("/api/report-photos")
-    public ResponseEntity<?> createReportPhoto(RequestEntity<ReportPhotos> requestEntity){
+    public ResponseEntity<?> createReportPhoto(
+            RequestEntity<ReportPhotos> requestEntity,
+            @RequestAttribute(value = JwtAuthFilter.USER_ID_ATTR, required = false) Long userId,
+            @RequestAttribute(value = JwtAuthFilter.ROLE_ATTR, required = false) String role) {
         try {
-            ReportPhotos createdReportPhoto = reportService.createReportPhoto(requestEntity.getBody());
+            ReportPhotos body = requestEntity.getBody();
+            if (body != null && body.getReportId() != null) {
+                reportService.assertCanManageReport(body.getReportId(), userId, role);
+            }
+            ReportPhotos createdReportPhoto = reportService.createReportPhoto(body);
             return ResponseEntity.ok(createdReportPhoto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -105,19 +112,32 @@ public class ReportController{
     }
 
     @DeleteMapping("/api/reports/{reportId}")
-    public ResponseEntity<Void> deleteReport(@PathVariable Long reportId){
+    public ResponseEntity<Void> deleteReport(
+            @PathVariable Long reportId,
+            @RequestAttribute(value = JwtAuthFilter.USER_ID_ATTR, required = false) Long userId,
+            @RequestAttribute(value = JwtAuthFilter.ROLE_ATTR, required = false) String role) {
+        reportService.assertCanManageReport(reportId, userId, role);
         reportService.deleteReport(reportId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/api/report-photos/{reportPhotoId}")
-    public ResponseEntity<Void> deleteReportPhoto(@PathVariable Long reportPhotoId){
+    public ResponseEntity<Void> deleteReportPhoto(
+            @PathVariable Long reportPhotoId,
+            @RequestAttribute(value = JwtAuthFilter.USER_ID_ATTR, required = false) Long userId,
+            @RequestAttribute(value = JwtAuthFilter.ROLE_ATTR, required = false) String role) {
+        reportService.assertCanManageReportPhoto(reportPhotoId, userId, role);
         reportService.deleteReportPhoto(reportPhotoId);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/api/reports/{reportId}")
-    public ResponseEntity<Reports> updateReport(@PathVariable Long reportId, RequestEntity<Reports> requestEntity){
+    public ResponseEntity<Reports> updateReport(
+            @PathVariable Long reportId,
+            RequestEntity<Reports> requestEntity,
+            @RequestAttribute(value = JwtAuthFilter.USER_ID_ATTR, required = false) Long userId,
+            @RequestAttribute(value = JwtAuthFilter.ROLE_ATTR, required = false) String role) {
+        reportService.assertCanManageReport(reportId, userId, role);
         Reports report = requestEntity.getBody();
         Reports updatedReport = reportService.updateReport(reportId, report);
         if (updatedReport == null) {
@@ -127,7 +147,12 @@ public class ReportController{
     }
 
     @PutMapping("/api/report-photos/{reportPhotoId}")
-    public ResponseEntity<ReportPhotos> updateReportPhoto(@PathVariable Long reportPhotoId, RequestEntity<ReportPhotos> requestEntity){
+    public ResponseEntity<ReportPhotos> updateReportPhoto(
+            @PathVariable Long reportPhotoId,
+            RequestEntity<ReportPhotos> requestEntity,
+            @RequestAttribute(value = JwtAuthFilter.USER_ID_ATTR, required = false) Long userId,
+            @RequestAttribute(value = JwtAuthFilter.ROLE_ATTR, required = false) String role) {
+        reportService.assertCanManageReportPhoto(reportPhotoId, userId, role);
         ReportPhotos reportPhoto = requestEntity.getBody();
         ReportPhotos updatedReportPhoto = reportService.updateReportPhoto(reportPhotoId, reportPhoto);
         if (updatedReportPhoto == null) {
@@ -139,9 +164,16 @@ public class ReportController{
     // --- 특징 태그 ---
 
     @PostMapping("/api/report-features")
-    public ResponseEntity<?> createReportFeature(RequestEntity<ReportFeatures> requestEntity) {
+    public ResponseEntity<?> createReportFeature(
+            RequestEntity<ReportFeatures> requestEntity,
+            @RequestAttribute(value = JwtAuthFilter.USER_ID_ATTR, required = false) Long userId,
+            @RequestAttribute(value = JwtAuthFilter.ROLE_ATTR, required = false) String role) {
         try {
-            ReportFeatures created = reportService.createReportFeature(requestEntity.getBody());
+            ReportFeatures body = requestEntity.getBody();
+            if (body != null && body.getReportId() != null) {
+                reportService.assertCanManageReport(body.getReportId(), userId, role);
+            }
+            ReportFeatures created = reportService.createReportFeature(body);
             return ResponseEntity.ok(created);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -165,7 +197,10 @@ public class ReportController{
     @PutMapping("/api/report-features/{reportFeatureId}")
     public ResponseEntity<ReportFeatures> updateReportFeature(
             @PathVariable Long reportFeatureId,
-            RequestEntity<ReportFeatures> requestEntity) {
+            RequestEntity<ReportFeatures> requestEntity,
+            @RequestAttribute(value = JwtAuthFilter.USER_ID_ATTR, required = false) Long userId,
+            @RequestAttribute(value = JwtAuthFilter.ROLE_ATTR, required = false) String role) {
+        reportService.assertCanManageReportFeature(reportFeatureId, userId, role);
         ReportFeatures updated = reportService.updateReportFeature(reportFeatureId, requestEntity.getBody());
         if (updated == null) {
             return ResponseEntity.notFound().build();
@@ -174,7 +209,11 @@ public class ReportController{
     }
 
     @DeleteMapping("/api/report-features/{reportFeatureId}")
-    public ResponseEntity<Void> deleteReportFeature(@PathVariable Long reportFeatureId) {
+    public ResponseEntity<Void> deleteReportFeature(
+            @PathVariable Long reportFeatureId,
+            @RequestAttribute(value = JwtAuthFilter.USER_ID_ATTR, required = false) Long userId,
+            @RequestAttribute(value = JwtAuthFilter.ROLE_ATTR, required = false) String role) {
+        reportService.assertCanManageReportFeature(reportFeatureId, userId, role);
         reportService.deleteReportFeature(reportFeatureId);
         return ResponseEntity.noContent().build();
     }

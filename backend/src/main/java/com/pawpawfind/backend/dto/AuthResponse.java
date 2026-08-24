@@ -1,21 +1,23 @@
 package com.pawpawfind.backend.dto;
 
-/** 카카오 로그인 성공 응답. FE는 accessToken을 localStorage 등에 저장한다. */
+/** 로그인 성공 응답. FE는 accessToken을 저장한다. */
 public class AuthResponse {
 
 	private String accessToken;
 	private Long userId;
 	private String nickname;
 	private String provider;
+	private String role;
 
 	public AuthResponse() {
 	}
 
-	public AuthResponse(String accessToken, Long userId, String nickname, String provider) {
+	public AuthResponse(String accessToken, Long userId, String nickname, String provider, String role) {
 		this.accessToken = accessToken;
 		this.userId = userId;
 		this.nickname = nickname;
 		this.provider = provider;
+		this.role = role;
 	}
 
 	public String getAccessToken() {
@@ -48,5 +50,13 @@ public class AuthResponse {
 
 	public void setProvider(String provider) {
 		this.provider = provider;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 }

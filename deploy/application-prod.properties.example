@@ -18,8 +18,14 @@ aws.s3.upload-prefix=reports/
 animal.api.key=CHANGE_ME
 animal.api.url=https://apis.data.go.kr/1543061/abandonmentPublicService_v2/abandonmentPublic_v2
 
-ai.service.url=http://127.0.0.1:8000
+# AI 서버 private IP (같은 VPC)
+ai.service.url=http://172.31.44.240:8000
+
+# 관리자 카카오 회원번호(쉼표 구분). 로그인 시 role=ADMIN
+# 확인: 카카오 1회 로그인 후 DB users.provider_id
+admin.kakao-ids=
 
 # HS256 — 32자 이상 랜덤 문자열 (openssl rand -base64 48)
 jwt.secret=CHANGE_ME_TO_RANDOM_32_PLUS_CHARS
 jwt.expiration-ms=86400000
+

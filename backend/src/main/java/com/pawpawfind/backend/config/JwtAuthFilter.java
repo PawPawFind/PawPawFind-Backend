@@ -13,13 +13,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Authorization: Bearer 토큰이 있으면 userId를 request attribute에 넣는다.
+ * Authorization: Bearer 토큰이 있으면 userId·role을 request attribute에 넣는다.
  * 토큰이 없거나 잘못됐어도 요청은 통과시킨다(익명 API 허용).
  */
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
 	public static final String USER_ID_ATTR = "userId";
+	public static final String ROLE_ATTR = "role";
 
 	private final JwtService jwtService;
 
@@ -33,8 +34,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		String auth = request.getHeader("Authorization");
 		if (auth != null && auth.startsWith("Bearer ")) {
 			try {
-				Long userId = jwtService.parseUserId(auth.substring(7).trim());
-				request.setAttribute(USER_ID_ATTR, userId);
+				String token = auth.substring(7).trim();
+				request.setAttribute(USER_ID_ATTR, jwtService.parseUserId(token));
+				request.setAttribute(ROLE_ATTR, jwtService.parseRole(token));
 			} catch (RuntimeException ignored) {
 				// invalid token — treat as anonymous
 			}

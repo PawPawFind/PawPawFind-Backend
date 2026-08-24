@@ -2,7 +2,10 @@ package com.pawpawfind.backend.service;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -10,10 +13,12 @@ import org.springframework.web.client.RestClient;
 
 import com.pawpawfind.backend.dto.AuthResponse;
 import com.pawpawfind.backend.entity.User;
+import com.pawpawfind.backend.entity.UserRoles;
 import com.pawpawfind.backend.repository.UserRepository;
 
 /**
- * 카카오 OAuth 로그인. code → access_token → 유저 정보 → users 저장/조회.
+ * 카카오 OAuth 로그인.
+ * admin.kakao-ids 에 등록된 카카오 회원번호(provider_id)는 ADMIN 역할을 준다.
  */
 @Service
 public class AuthService {
@@ -25,6 +30,10 @@ public class AuthService {
 
 	@Value("${kakao.redirect-uri}")
 	private String redirectUri;
+
+	/** 쉼표 구분 카카오 회원번호. 예: 1234567890,9876543210 */
+	@Value("${admin.kakao-ids:}")
+	private String adminKakaoIds;
 
 	private final UserRepository userRepository;
 	private final JwtService jwtService;
@@ -45,25 +54,51 @@ public class AuthService {
 
 		String providerId = String.valueOf(me.get("id"));
 		String nickname = extractNickname(me);
+		String role = resolveRole(providerId);
 
 		User user = userRepository.findByProviderAndProviderId(KAKAO_PROVIDER, providerId)
 				.map(existing -> {
+					boolean changed = false;
 					if (!nickname.equals(existing.getNickname())) {
 						existing.setNickname(nickname);
-						return userRepository.save(existing);
+						changed = true;
 					}
-					return existing;
+					if (!role.equals(existing.getRole())) {
+						existing.setRole(role);
+						changed = true;
+					}
+					return changed ? userRepository.save(existing) : existing;
 				})
 				.orElseGet(() -> {
 					User newUser = new User();
 					newUser.setProvider(KAKAO_PROVIDER);
 					newUser.setProviderId(providerId);
 					newUser.setNickname(nickname);
+					newUser.setRole(role);
 					return userRepository.save(newUser);
 				});
 
-		String token = jwtService.createToken(user.getUserId());
-		return new AuthResponse(token, user.getUserId(), user.getNickname(), user.getProvider());
+		String token = jwtService.createToken(user.getUserId(), user.getRole());
+		return new AuthResponse(
+				token,
+				user.getUserId(),
+				user.getNickname(),
+				user.getProvider(),
+				user.getRole());
+	}
+
+	private String resolveRole(String kakaoProviderId) {
+		return adminKakaoIdSet().contains(kakaoProviderId) ? UserRoles.ADMIN : UserRoles.USER;
+	}
+
+	private Set<String> adminKakaoIdSet() {
+		if (adminKakaoIds == null || adminKakaoIds.isBlank()) {
+			return Set.of();
+		}
+		return Arrays.stream(adminKakaoIds.split(","))
+				.map(String::trim)
+				.filter(s -> !s.isEmpty())
+				.collect(Collectors.toSet());
 	}
 
 	private String requestAccessToken(String code) {
