@@ -110,7 +110,8 @@ public class AbandonedService {
 
 	}
 
-	@Scheduled(fixedRate = 6 * 60 * 60 * 1000)
+	/** 보호소 공고 동기화. 1시간마다 실행 후 missing embed 트리거. */
+	@Scheduled(fixedRate = 60 * 60 * 1000)
 	public void scheduledSync() {
 		syncAbandonedAnimals();
 	}
