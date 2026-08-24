@@ -1,0 +1,25 @@
+# EC2: /home/ec2-user/application-prod.properties (Git에 올리지 않음)
+# cp deploy/application-prod.properties.example ~/application-prod.properties 후 값 채우기
+
+spring.datasource.url=jdbc:postgresql://pawpawfind-db.cbq2qkq2obyt.ap-northeast-2.rds.amazonaws.com:5432/postgres
+spring.datasource.username=pawpawfind
+spring.datasource.password=CHANGE_ME
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+
+kakao.rest-api-key=CHANGE_ME
+kakao.redirect-uri=http://www.pawpawfind.com/callback.html
+
+aws.region=ap-southeast-2
+aws.s3.bucket=pawpawfind-report-photos
+aws.s3.upload-prefix=reports/
+
+animal.api.key=CHANGE_ME
+animal.api.url=https://apis.data.go.kr/1543061/abandonmentPublicService_v2/abandonmentPublic_v2
+
+ai.service.url=http://127.0.0.1:8000
+
+# HS256 — 32자 이상 랜덤 문자열 (openssl rand -base64 48)
+jwt.secret=CHANGE_ME_TO_RANDOM_32_PLUS_CHARS
+jwt.expiration-ms=86400000

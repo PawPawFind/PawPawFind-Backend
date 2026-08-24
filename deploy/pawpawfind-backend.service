@@ -1,0 +1,17 @@
+[Unit]
+Description=PawPawFind Backend (Spring Boot)
+After=network.target pawpawfind-ai.service
+Wants=pawpawfind-ai.service
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/home/ec2-user
+ExecStart=/usr/bin/java -jar /home/ec2-user/backend-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod --spring.config.additional-location=file:/home/ec2-user/application-prod.properties
+Restart=on-failure
+RestartSec=10
+StandardOutput=append:/home/ec2-user/logs/backend.log
+StandardError=append:/home/ec2-user/logs/backend.log
+
+[Install]
+WantedBy=multi-user.target
