@@ -91,6 +91,29 @@ class SearchAreaAiClientTest {
 		server.verify();
 	}
 
+	@Test
+	void rejectsEmptyObjectAndInvalidReportIds() {
+		assertJsonResponseStatus("{}", HttpStatus.BAD_GATEWAY);
+		setUp();
+		assertJsonResponseStatus("{\"reportId\":99,\"areas\":[]}", HttpStatus.BAD_GATEWAY);
+		setUp();
+		assertJsonResponseStatus("{\"reportId\":null,\"areas\":[]}", HttpStatus.BAD_GATEWAY);
+	}
+
+	@Test
+	void rejectsMissingOrNullAreasButAllowsEmptyAreas() {
+		assertJsonResponseStatus("{\"reportId\":14}", HttpStatus.BAD_GATEWAY);
+		setUp();
+		assertJsonResponseStatus("{\"reportId\":14,\"areas\":null}", HttpStatus.BAD_GATEWAY);
+
+		setUp();
+		server.expect(requestTo("http://ai.test/search-areas"))
+				.andRespond(withSuccess("{\"reportId\":14,\"areas\":[]}", MediaType.APPLICATION_JSON));
+		SearchAreaResponse response = client.recommend(request());
+		assertThat(response.getAreas()).isEmpty();
+		server.verify();
+	}
+
 	private void assertStatus(org.springframework.test.web.client.ResponseCreator responseCreator,
 			HttpStatus expected) {
 		server.expect(requestTo("http://ai.test/search-areas")).andRespond(responseCreator);
@@ -99,8 +122,21 @@ class SearchAreaAiClientTest {
 	}
 
 	private void assertResponseStatus(HttpStatus expected) {
-		assertThatThrownBy(() -> client.recommend(new SearchAreaAiRequest()))
+		assertThatThrownBy(() -> client.recommend(request()))
 				.isInstanceOfSatisfying(ResponseStatusException.class,
 						exception -> assertThat(exception.getStatusCode()).isEqualTo(expected));
+	}
+
+	private void assertJsonResponseStatus(String json, HttpStatus expected) {
+		server.expect(requestTo("http://ai.test/search-areas"))
+				.andRespond(withSuccess(json, MediaType.APPLICATION_JSON));
+		assertResponseStatus(expected);
+		server.verify();
+	}
+
+	private SearchAreaAiRequest request() {
+		SearchAreaAiRequest request = new SearchAreaAiRequest();
+		request.setReportId(14L);
+		return request;
 	}
 }
