@@ -301,6 +301,10 @@ public class EmbeddingService {
 				speciesEn, modelVersion, preprocessVersion);
 		List<GallerySearchResponse.GalleryAnimalItem> items = new ArrayList<>();
 		for (AnimalEmbedding row : rows) {
+			// animals에 없는 orphan embedding은 갤러리에서 제외 (삭제/만료 공고)
+			if (!animalRepository.existsById(row.getDesertionNo())) {
+				continue;
+			}
 			EmbeddingVectors vectors = parseEmbeddingRef(row.getEmbeddingRef());
 			if (vectors == null) {
 				continue;

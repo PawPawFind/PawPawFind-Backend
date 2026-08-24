@@ -25,6 +25,7 @@ import com.pawpawfind.backend.entity.MatchRun;
 import com.pawpawfind.backend.entity.ReportFeatures;
 import com.pawpawfind.backend.entity.ReportPhotos;
 import com.pawpawfind.backend.entity.Reports;
+import com.pawpawfind.backend.repository.AnimalRepository;
 import com.pawpawfind.backend.repository.MatchResultRepository;
 import com.pawpawfind.backend.repository.MatchRunRepository;
 import com.pawpawfind.backend.repository.ReportFeatureRepository;
@@ -44,6 +45,7 @@ public class MatchService {
 	private final ReportRepository reportRepository;
 	private final ReportPhotoRepository reportPhotoRepository;
 	private final ReportFeatureRepository reportFeatureRepository;
+	private final AnimalRepository animalRepository;
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final RestClient restClient;
 
@@ -55,12 +57,14 @@ public class MatchService {
 			MatchResultRepository matchResultRepository,
 			ReportRepository reportRepository,
 			ReportPhotoRepository reportPhotoRepository,
-			ReportFeatureRepository reportFeatureRepository) {
+			ReportFeatureRepository reportFeatureRepository,
+			AnimalRepository animalRepository) {
 		this.matchRunRepository = matchRunRepository;
 		this.matchResultRepository = matchResultRepository;
 		this.reportRepository = reportRepository;
 		this.reportPhotoRepository = reportPhotoRepository;
 		this.reportFeatureRepository = reportFeatureRepository;
+		this.animalRepository = animalRepository;
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		this.restClient = RestClient.builder().requestFactory(requestFactory).build();
 	}
@@ -86,6 +90,9 @@ public class MatchService {
 		MatchRun savedRun = matchRunRepository.save(run);
 
 		for (MatchCandidateDto candidate : request.getResults()) {
+			if (!isResolvableCandidate(candidate)) {
+				continue;
+			}
 			MatchResult row = toEntity(savedRun.getId(), candidate);
 			matchResultRepository.save(row);
 		}
@@ -195,11 +202,18 @@ public class MatchService {
 
 	private MatchQueryResponse toResponse(MatchRun run, int limit) {
 		List<MatchResult> rows = matchResultRepository.findByMatchRunIdOrderByRankAsc(run.getId());
-		int effectiveLimit = limit > 0 ? limit : rows.size();
 		List<MatchCandidateDto> results = rows.stream()
-				.limit(effectiveLimit)
 				.map(this::toDto)
+				.filter(this::isResolvableCandidate)
 				.collect(Collectors.toList());
+		// orphan 제외 후 rank를 1..N으로 다시 매긴다
+		for (int i = 0; i < results.size(); i++) {
+			results.get(i).setRank((short) (i + 1));
+		}
+		int effectiveLimit = limit > 0 ? Math.min(limit, results.size()) : results.size();
+		if (effectiveLimit < results.size()) {
+			results = new ArrayList<>(results.subList(0, effectiveLimit));
+		}
 
 		MatchQueryResponse response = new MatchQueryResponse();
 		response.setMatchRunId(run.getId());
@@ -211,6 +225,27 @@ public class MatchService {
 		response.setCreatedAt(run.getCreatedAt());
 		response.setResults(results);
 		return response;
+	}
+
+	/**
+	 * SHELTER: animals에 desertionNo가 있어야 함.
+	 * REPORT: reports에 candidateReportId가 있어야 함.
+	 */
+	private boolean isResolvableCandidate(MatchCandidateDto candidate) {
+		if (candidate == null || candidate.getCandidateType() == null) {
+			return false;
+		}
+		if (MatchResult.CANDIDATE_SHELTER.equals(candidate.getCandidateType())) {
+			String desertionNo = candidate.getDesertionNo();
+			return desertionNo != null
+					&& !desertionNo.isBlank()
+					&& animalRepository.existsById(desertionNo);
+		}
+		if (MatchResult.CANDIDATE_REPORT.equals(candidate.getCandidateType())) {
+			Long reportId = candidate.getCandidateReportId();
+			return reportId != null && reportRepository.existsById(reportId);
+		}
+		return false;
 	}
 
 	private MatchCandidateDto toDto(MatchResult row) {
