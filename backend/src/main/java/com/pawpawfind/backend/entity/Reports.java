@@ -13,8 +13,8 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 /**
- * 사용자 실종(LOST) / 목격(FOUND) 제보. 사진·특징은 별도 테이블.
- * users 테이블 연동 전이라 userId는 null 허용.
+ * 사용자 실종(LOST) / 목격(FOUND) 제보. 사진·특징·털색은 별도 테이블.
+ * 털색: report_features (category=털색, keyword=색상명, 1색=1행).
  */
 @Entity
 @Table(name = "reports")
@@ -43,9 +43,6 @@ public class Reports {
 	@Column(name = "size", length = 10, nullable = false)
 	private String size;
 
-	@Column(name = "color", length = 20, nullable = false)
-	private String color;
-
 	/** 실종일 또는 목격일. */
 	@Column(name = "event_date", nullable = false)
 	private LocalDate eventDate;
@@ -63,7 +60,7 @@ public class Reports {
 	@Column(name = "longitude", nullable = false)
 	private Double longitude;
 
-	@Column(name = "description", columnDefinition = "TEXT", nullable = false)
+	@Column(name = "description", columnDefinition = "TEXT")
 	private String description;
 
 	/** 기본값 OPEN. CLOSED는 종료된 제보. */
@@ -137,14 +134,6 @@ public class Reports {
 
 	public void setSize(String size) {
 		this.size = size;
-	}
-
-	public String getColor() {
-		return color;
-	}
-
-	public void setColor(String color) {
-		this.color = color;
 	}
 
 	public LocalDate getEventDate() {

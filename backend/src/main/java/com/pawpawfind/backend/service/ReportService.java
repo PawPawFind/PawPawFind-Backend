@@ -1,9 +1,12 @@
 package com.pawpawfind.backend.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.pawpawfind.backend.repository.ReportRepository;
 import com.pawpawfind.backend.repository.ReportPhotoRepository;
 import com.pawpawfind.backend.repository.ReportFeatureRepository;
+import com.pawpawfind.backend.repository.ReportEmbeddingRepository;
 import com.pawpawfind.backend.entity.Reports;
 import com.pawpawfind.backend.entity.ReportPhotos;
 import com.pawpawfind.backend.entity.ReportFeatures;
@@ -16,29 +19,53 @@ import java.util.List;
 @Service 
 public class ReportService {
 
+    private static final String COLOR_CATEGORY = "털색";
+    private static final int MAX_COLORS_PER_REPORT = 3;
+
     private final ReportRepository reportRepository;
     private final ReportPhotoRepository reportPhotoRepository;
     private final ReportFeatureRepository reportFeatureRepository;
+    private final ReportEmbeddingRepository reportEmbeddingRepository;
+    private final ReportEmbedTriggerService reportEmbedTriggerService;
 
     public ReportService(ReportRepository reportRepository,
             ReportPhotoRepository reportPhotoRepository,
-            ReportFeatureRepository reportFeatureRepository) {
+            ReportFeatureRepository reportFeatureRepository,
+            ReportEmbeddingRepository reportEmbeddingRepository,
+            ReportEmbedTriggerService reportEmbedTriggerService) {
         this.reportRepository = reportRepository;
         this.reportPhotoRepository = reportPhotoRepository;
         this.reportFeatureRepository = reportFeatureRepository;
+        this.reportEmbeddingRepository = reportEmbeddingRepository;
+        this.reportEmbedTriggerService = reportEmbedTriggerService;
     }
 
-    public Reports createReport(Reports report){
+    public Reports createReport(Reports report, Long userId){
+        if (userId != null) {
+            report.setUserId(userId);
+        }
         return reportRepository.save(report);
     }
 
     public ReportPhotos createReportPhoto(ReportPhotos reportPhoto){
-        return reportPhotoRepository.save(reportPhoto);
+        long count = reportPhotoRepository.countByReportId(reportPhoto.getReportId());
+        if (count >= 3) {
+            throw new IllegalArgumentException("사진은 제보당 최대 3장까지입니다.");
+        }
+        ReportPhotos saved = reportPhotoRepository.save(reportPhoto);
+        reportEmbedTriggerService.triggerReportPhotoEmbed(saved);
+        return saved;
     }
 
-    public List<Reports> getReports(){
-        return reportRepository.findAll();
+    public Page<Reports> getReports(String reportType, Pageable pageable) {
+        if (reportType == null || reportType.isBlank()) {
+            return reportRepository.findAllByOrderByCreatedAtDesc(pageable);
+        }
+        return reportRepository.findByReportTypeOrderByCreatedAtDesc(reportType, pageable);
+    }
 
+    public Page<Reports> getMyReports(Long userId, Pageable pageable) {
+        return reportRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
     }
 
     public Reports getReport(Long reportId){
@@ -46,10 +73,8 @@ public class ReportService {
 
     }
 
-    /** TODO: reportId로 필터해야 함. 지금은 전체 사진을 반환한다. */
     public List<ReportPhotos> getReportPhotos(Long reportId){
-        return reportPhotoRepository.findAll();
-
+        return reportPhotoRepository.findByReportId(reportId);
     }
 
     public ReportPhotos getReportPhoto(Long reportPhotoId){
@@ -57,10 +82,14 @@ public class ReportService {
     }
 
     public void deleteReport(Long reportId){
+        reportEmbeddingRepository.deleteByReportId(reportId);
+        reportPhotoRepository.deleteByReportId(reportId);
+        reportFeatureRepository.deleteByReportId(reportId);
         reportRepository.deleteById(reportId);
     }
 
     public void deleteReportPhoto(Long reportPhotoId){
+        reportEmbeddingRepository.deleteByReportPhotoId(reportPhotoId);
         reportPhotoRepository.deleteById(reportPhotoId);
     }
 
@@ -75,7 +104,6 @@ public class ReportService {
         existingReport.setReportType(report.getReportType());
         existingReport.setSpecies(report.getSpecies());
         existingReport.setSize(report.getSize());
-        existingReport.setColor(report.getColor());
         existingReport.setEventDate(report.getEventDate());
         existingReport.setEventHour(report.getEventHour());
         existingReport.setHappenPlace(report.getHappenPlace());
@@ -96,11 +124,19 @@ public class ReportService {
         existingReportPhoto.setPhotoUrl(reportPhoto.getPhotoUrl());
         existingReportPhoto.setSortOrder(reportPhoto.getSortOrder());
 
-
-        return reportPhotoRepository.save(existingReportPhoto);
+        ReportPhotos saved = reportPhotoRepository.save(existingReportPhoto);
+        reportEmbedTriggerService.triggerReportPhotoEmbed(saved);
+        return saved;
     }
 
     public ReportFeatures createReportFeature(ReportFeatures reportFeature) {
+        if (COLOR_CATEGORY.equals(reportFeature.getCategory())) {
+            long count = reportFeatureRepository.countByReportIdAndCategory(
+                    reportFeature.getReportId(), COLOR_CATEGORY);
+            if (count >= MAX_COLORS_PER_REPORT) {
+                throw new IllegalArgumentException("털색은 제보당 최대 3개까지입니다.");
+            }
+        }
         return reportFeatureRepository.save(reportFeature);
     }
 

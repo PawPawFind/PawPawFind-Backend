@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import com.pawpawfind.backend.entity.Animal;
 import com.pawpawfind.backend.repository.AnimalRepository;
-
 
 /**
  * 농림축산식품부 유기동물 공고(abandonmentPublic_v2) 수집.
@@ -20,9 +20,13 @@ import com.pawpawfind.backend.repository.AnimalRepository;
 @Service
 public class AbandonedService {
 	private final AnimalRepository animalRepository;
+	private final AnimalEmbedTriggerService animalEmbedTriggerService;
 
-	public AbandonedService(AnimalRepository animalRepository) {
+	public AbandonedService(
+			AnimalRepository animalRepository,
+			AnimalEmbedTriggerService animalEmbedTriggerService) {
 		this.animalRepository = animalRepository;
+		this.animalEmbedTriggerService = animalEmbedTriggerService;
 	}
 
 	@Value("${animal.api.key}")
@@ -90,7 +94,8 @@ public class AbandonedService {
 				row.setCareAddr((String) animal.get("careAddr"));
 				row.setOrgNm((String) animal.get("orgNm"));
 				row.setSourceUpdTm((String) animal.get("updTm"));
-				animalRepository.save(row);
+				Animal savedAnimal = animalRepository.save(row);
+				animalEmbedTriggerService.triggerIfMissing(savedAnimal);
 			}
 
 			saved = saved + itemList.size();
@@ -103,5 +108,10 @@ public class AbandonedService {
 
         return animalRepository.findAll();
 
+	}
+
+	@Scheduled(fixedRate = 6 * 60 * 60 * 1000)
+	public void scheduledSync() {
+		syncAbandonedAnimals();
 	}
 }
