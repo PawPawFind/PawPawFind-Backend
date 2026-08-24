@@ -1,5 +1,7 @@
 package com.pawpawfind.backend.service;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,7 +34,9 @@ public class SearchAreaAiClient {
 					.body(request)
 					.retrieve()
 					.body(SearchAreaResponse.class);
-			if (response == null) {
+			if (response == null || response.getReportId() == null
+					|| !Objects.equals(response.getReportId(), request.getReportId())
+					|| response.getAreas() == null) {
 				throw badGateway();
 			}
 			return response;
