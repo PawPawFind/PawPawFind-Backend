@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 |------|------|
 | 담당 | **강유진** |
-| 목차 | [BACKEND.md](../BACKEND.md) · [임베딩 Internal](./embedding-internal-api.md) |
+| 목차 | [README.md](../README.md) · [임베딩 Internal](./embedding-internal-api.md) |
 
 제보 사진·특징을 AI `/match`에 보내 Top-N 후보를 받고 `match_runs` / `match_results`에 저장한다.  
 SHELTER 후보에는 보호소 위치(`MatchShelterDto`)를 보강할 수 있다.

@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 |------|------|
 | 담당 | **강유진** |
-| 목차 | [BACKEND.md](../BACKEND.md) · [제보 API](./reports-api.md) |
+| 목차 | [README.md](../README.md) · [제보 API](./reports-api.md) |
 
 ## 호출
 
