@@ -6,7 +6,7 @@
 | 항목 | 내용 |
 |------|------|
 | 문서 버전 | 1.0 (레거시) |
-| 대상 | 백엔드 (Spring Boot) — 주 담당 **강유진** |
+| 대상 | 백엔드 (Spring Boot) |
 | 관련 문서 | [backend/](./backend/README.md) · [DB(레거시)](./database.md) · [BE 할 일](./backend-할일.md) |
 | 로컬 | `http://127.0.0.1:8080` (https 아님) · Swagger `http://127.0.0.1:8080/swagger-ui.html` |
 
