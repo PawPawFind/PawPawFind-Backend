@@ -41,6 +41,18 @@ class ShelterLocationRepositoryTest {
 				.containsExactly(pending.getId(), failed.getId());
 	}
 
+	@Test
+	void findsLocationsByDistinctShelterKeys() {
+		ShelterLocation first = repository.save(location("REG:1", GeocodeStatus.SUCCESS, 1));
+		ShelterLocation second = repository.save(location("ADDR:2", GeocodeStatus.PENDING, 0));
+		repository.save(location("REG:3", GeocodeStatus.SUCCESS, 1));
+
+		List<ShelterLocation> locations = repository.findAllByShelterKeyIn(List.of("REG:1", "ADDR:2"));
+
+		assertThat(locations).extracting(ShelterLocation::getId)
+				.containsExactlyInAnyOrder(first.getId(), second.getId());
+	}
+
 	private ShelterLocation location(String key, GeocodeStatus status, int attempts) {
 		ShelterLocation location = new ShelterLocation();
 		location.setShelterKey(key);
