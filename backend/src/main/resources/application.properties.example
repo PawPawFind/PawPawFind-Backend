@@ -18,6 +18,14 @@ animal.api.url=https://apis.data.go.kr/1543061/abandonmentPublicService_v2/aband
 kakao.rest-api-key=YOUR_KAKAO_REST_API_KEY
 kakao.redirect-uri=http://localhost:5173/callback
 
+# Kakao Local address geocoding (disabled until the REST API key is configured)
+kakao.local.enabled=false
+kakao.local.base-url=https://dapi.kakao.com
+kakao.local.connect-timeout-millis=2000
+kakao.local.read-timeout-millis=5000
+kakao.local.batch-size=50
+kakao.local.max-attempts=3
+
 # 관리자로 지정할 카카오 회원번호(쉼표 구분). 로그인 시 role=ADMIN
 # 회원번호 확인: 한 번 카카오 로그인 후 DB users.provider_id
 admin.kakao-ids=
