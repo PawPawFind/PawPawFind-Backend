@@ -9,7 +9,7 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 
 kakao.rest-api-key=CHANGE_ME
-kakao.redirect-uri=http://www.pawpawfind.com/callback.html
+kakao.redirect-uri=https://www.pawpawfind.com/callback.html
 kakao.local.enabled=false
 kakao.local.base-url=https://dapi.kakao.com
 kakao.local.connect-timeout-millis=2000

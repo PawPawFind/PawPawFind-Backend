@@ -47,8 +47,8 @@ FE ──JWT──▶ Backend ──▶ AI (match / search-areas / embed)
 
 | 구분 | 방식 |
 |------|------|
-| 공개 | 목록·상세·nearby·건강체크 등 |
-| JWT 필요 | 내 제보, 제보/사진/특징 수정·삭제, search-areas |
+| 공개 | 목록·상세·nearby·제보/사진/특징 **생성**·건강체크 등 |
+| JWT 필요 | 내 제보, 제보/사진/특징 **수정·삭제**, search-areas |
 | 권한 | 작성자(`userId`) 또는 `ADMIN` |
 | Internal | `/api/internal/**` — 앱 단 토큰 없음 (VPC/네트워크 신뢰) |
 

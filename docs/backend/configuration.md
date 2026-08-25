@@ -25,7 +25,7 @@
 | `kakao.local.read-timeout-millis` | 응답 timeout(ms) | `5000` |
 | `kakao.local.batch-size` | 동기화 1회 최대 지오코딩 수 | `50` |
 | `kakao.local.max-attempts` | 주소별 최대 자동 시도 횟수 | `3` |
-| `kakao.redirect-uri` | OAuth redirect | FE 콜백과 일치 |
+| `kakao.redirect-uri` | OAuth redirect | FE 콜백과 일치 (운영은 `https://…` 권장) |
 | `admin.kakao-ids` | ADMIN 카카오 `provider_id` | 쉼표 구분 |
 | `jwt.secret` | JWT HS256 | 32자+ 권장 |
 | `jwt.expiration-ms` | JWT 만료(ms) | 기본 86400000 |
@@ -69,6 +69,7 @@ aws.s3.upload-prefix=reports/
 
 - BE EC2와 AI EC2는 같은 VPC → `ai.service.url=http://<AI_PRIVATE_IP>:8000`
 - RDS PostgreSQL URL·계정은 EC2 로컬 properties에만
+- FE가 HTTPS면 `kakao.redirect-uri`도 HTTPS로 맞추고, EC2의 `application-prod.properties`에 반영한다 (`WebConfig` CORS에 `https://www.pawpawfind.com` 등이 포함됨)
 - 배포: `.github/workflows/deploy-backend.yml` · [GITHUB_ACTIONS.md](../../deploy/GITHUB_ACTIONS.md)
 
 ## Swagger

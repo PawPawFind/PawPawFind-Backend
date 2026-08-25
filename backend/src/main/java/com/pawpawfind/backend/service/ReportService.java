@@ -57,6 +57,12 @@ public class ReportService {
     }
 
     public ReportPhotos createReportPhoto(ReportPhotos reportPhoto){
+        if (reportPhoto == null || reportPhoto.getReportId() == null) {
+            throw new IllegalArgumentException("reportId가 필요합니다.");
+        }
+        if (!reportRepository.existsById(reportPhoto.getReportId())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "제보를 찾을 수 없습니다.");
+        }
         long count = reportPhotoRepository.countByReportId(reportPhoto.getReportId());
         if (count >= 3) {
             throw new IllegalArgumentException("사진은 제보당 최대 3장까지입니다.");
@@ -169,6 +175,12 @@ public class ReportService {
     }
 
     public ReportFeatures createReportFeature(ReportFeatures reportFeature) {
+        if (reportFeature == null || reportFeature.getReportId() == null) {
+            throw new IllegalArgumentException("reportId가 필요합니다.");
+        }
+        if (!reportRepository.existsById(reportFeature.getReportId())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "제보를 찾을 수 없습니다.");
+        }
         if (COLOR_CATEGORY.equals(reportFeature.getCategory())) {
             long count = reportFeatureRepository.countByReportIdAndCategory(
                     reportFeature.getReportId(), COLOR_CATEGORY);
