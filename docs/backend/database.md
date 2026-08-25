@@ -26,7 +26,8 @@ reports
         └── match_results      (SHELTER → desertion_no / REPORT → candidate_report_id)
 
 animals (PK = desertion_no)
-  └── animal_embeddings        (gallery_id unique)
+  ├── animal_embeddings        (gallery_id unique)
+  └── shelter_locations        (care_reg_no 또는 주소 기반 논리 연결)
 ```
 
 자식 테이블은 `report_id` 등을 컬럼으로만 들고, DB FK 제약은 두지 않은 경우가 많다.
@@ -126,6 +127,27 @@ animals (PK = desertion_no)
 | `embedding_ref` | 벡터 참조/직렬화 |
 | `detection_confidence`, `blur_score` | |
 | timestamps | |
+
+---
+
+## `shelter_locations`
+
+공공 보호동물의 보호소 주소를 지도 좌표로 변환해 보호소 단위로 저장한다. `animals`에 좌표를
+중복 저장하지 않으며 `shelter_key`에 고유 제약을 둔다.
+
+| 컬럼 | 설명 |
+|------|------|
+| `id` | 내부 PK |
+| `shelter_key` | unique, 등록번호 또는 주소 해시 기반 식별 키 |
+| `care_reg_no`, `care_nm`, `care_tel`, `care_addr` | 공공데이터 보호소 정보 |
+| `normalized_address`, `address_hash` | 지오코딩 입력과 주소 변경 감지 |
+| `latitude`, `longitude` | 지오코딩 성공 좌표, 성공 전 nullable |
+| `geocode_status` | `PENDING`, `SUCCESS`, `NOT_FOUND`, `FAILED` |
+| `geocode_provider` | 성공 시 `KAKAO` |
+| `attempt_count`, `geocoded_at` | 재시도 횟수와 성공 시각 |
+| `created_at`, `updated_at` | 레코드 시각 |
+
+상세한 식별·상태 전이·운영 방식은 [shelter-geocoding.md](./shelter-geocoding.md)를 참고한다.
 
 ---
 
