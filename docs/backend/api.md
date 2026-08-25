@@ -147,6 +147,9 @@ V1: `LOST` + `강아지`만.
 응답(`MatchQueryResponse`): `matchRunId`, `reportId`, `modelVersion`, `rerankVersion`, `decision`, `status`, `createdAt`, `results[]`  
 후보: `SHELTER`(`desertionNo`) 또는 `REPORT`(`candidateReportId`) + 점수·태그·이미지 URL
 
+`SHELTER` 후보에는 nullable `shelter` 객체(등록번호·이름·주소·전화번호·저장 좌표)가 추가된다. `REPORT` 후보는 `shelter=null`이며, 좌표가 없어도 보호소 텍스트와 후보는 유지한다.
+→ [match-shelter-location.md](./match-shelter-location.md)
+
 ---
 
 ## Internal (AI ↔ BE)
