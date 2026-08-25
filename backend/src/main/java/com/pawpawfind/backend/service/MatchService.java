@@ -2,7 +2,9 @@ package com.pawpawfind.backend.service;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -91,9 +93,11 @@ public class MatchService {
 		run.setDecision(request.getDecision());
 		run.setStatus(STATUS_DONE);
 		MatchRun savedRun = matchRunRepository.save(run);
+		Set<String> existingAnimals = existingAnimalIds(request.getResults());
+		Set<Long> existingReports = existingReportIds(request.getResults());
 
 		for (MatchCandidateDto candidate : request.getResults()) {
-			if (!isResolvableCandidate(candidate)) {
+			if (!isResolvableCandidate(candidate, existingAnimals, existingReports)) {
 				continue;
 			}
 			MatchResult row = toEntity(savedRun.getId(), candidate);
@@ -234,7 +238,8 @@ public class MatchService {
 	 * SHELTER: animals에 desertionNo가 있어야 함.
 	 * REPORT: reports에 candidateReportId가 있어야 함.
 	 */
-	private boolean isResolvableCandidate(MatchCandidateDto candidate) {
+	private boolean isResolvableCandidate(MatchCandidateDto candidate,
+			Set<String> existingAnimals, Set<Long> existingReports) {
 		if (candidate == null || candidate.getCandidateType() == null) {
 			return false;
 		}
@@ -242,13 +247,39 @@ public class MatchService {
 			String desertionNo = candidate.getDesertionNo();
 			return desertionNo != null
 					&& !desertionNo.isBlank()
-					&& animalRepository.existsById(desertionNo);
+					&& existingAnimals.contains(desertionNo);
 		}
 		if (MatchResult.CANDIDATE_REPORT.equals(candidate.getCandidateType())) {
 			Long reportId = candidate.getCandidateReportId();
-			return reportId != null && reportRepository.existsById(reportId);
+			return reportId != null && existingReports.contains(reportId);
 		}
 		return false;
+	}
+
+	private Set<String> existingAnimalIds(List<MatchCandidateDto> candidates) {
+		Set<String> ids = candidates.stream()
+				.filter(candidate -> candidate != null
+						&& MatchResult.CANDIDATE_SHELTER.equals(candidate.getCandidateType()))
+				.map(MatchCandidateDto::getDesertionNo)
+				.filter(id -> id != null && !id.isBlank())
+				.collect(Collectors.toSet());
+		if (ids.isEmpty()) return Set.of();
+		Set<String> existing = new HashSet<>();
+		animalRepository.findAllById(ids).forEach(animal -> existing.add(animal.getDesertionNo()));
+		return existing;
+	}
+
+	private Set<Long> existingReportIds(List<MatchCandidateDto> candidates) {
+		Set<Long> ids = candidates.stream()
+				.filter(candidate -> candidate != null
+						&& MatchResult.CANDIDATE_REPORT.equals(candidate.getCandidateType()))
+				.map(MatchCandidateDto::getCandidateReportId)
+				.filter(java.util.Objects::nonNull)
+				.collect(Collectors.toSet());
+		if (ids.isEmpty()) return Set.of();
+		Set<Long> existing = new HashSet<>();
+		reportRepository.findAllById(ids).forEach(report -> existing.add(report.getReportId()));
+		return existing;
 	}
 
 	private MatchCandidateDto toDto(MatchResult row) {

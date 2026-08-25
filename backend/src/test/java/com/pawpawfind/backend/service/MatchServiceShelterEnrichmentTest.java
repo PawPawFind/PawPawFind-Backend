@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -16,8 +17,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.pawpawfind.backend.dto.MatchCandidateDto;
+import com.pawpawfind.backend.dto.MatchResultUpsertRequest;
+import com.pawpawfind.backend.entity.Animal;
 import com.pawpawfind.backend.entity.MatchResult;
 import com.pawpawfind.backend.entity.MatchRun;
+import com.pawpawfind.backend.entity.Reports;
 import com.pawpawfind.backend.repository.AnimalRepository;
 import com.pawpawfind.backend.repository.MatchResultRepository;
 import com.pawpawfind.backend.repository.MatchRunRepository;
@@ -85,6 +89,38 @@ class MatchServiceShelterEnrichmentTest {
 		verify(animalRepository, never()).existsById(org.mockito.ArgumentMatchers.anyString());
 	}
 
+	@Test
+	void validatesCandidatesWithDeduplicatedBatchQueriesBeforeSaving() {
+		MatchRun run = run();
+		when(reportRepository.existsById(14L)).thenReturn(true);
+		when(matchRunRepository.save(org.mockito.ArgumentMatchers.any())).thenReturn(run);
+		when(matchRunRepository.findTopByReportIdAndStatusOrderByCreatedAtDesc(14L, "DONE"))
+				.thenReturn(Optional.of(run));
+		when(matchResultRepository.findByMatchRunIdOrderByRankAsc(9L)).thenReturn(List.of());
+		Animal animal = new Animal();
+		animal.setDesertionNo("A-1");
+		when(animalRepository.findAllById(org.mockito.ArgumentMatchers.any())).thenReturn(List.of(animal));
+		Reports report = new Reports();
+		report.setReportId(22L);
+		when(reportRepository.findAllById(org.mockito.ArgumentMatchers.any())).thenReturn(List.of(report));
+		MatchCandidateDto shelter = candidate("SHELTER", "A-1", null);
+		MatchCandidateDto duplicate = candidate("SHELTER", "A-1", null);
+		MatchCandidateDto reportCandidate = candidate("REPORT", null, 22L);
+		MatchCandidateDto missing = candidate("SHELTER", "missing", null);
+		MatchResultUpsertRequest request = new MatchResultUpsertRequest();
+		request.setReportId(14L);
+		request.setModelVersion("model-v1");
+		request.setDecision("REVIEW");
+		request.setResults(List.of(shelter, duplicate, reportCandidate, missing));
+
+		service.saveMatchResults(request);
+
+		verify(animalRepository, times(1)).findAllById(org.mockito.ArgumentMatchers.any());
+		verify(reportRepository, times(1)).findAllById(org.mockito.ArgumentMatchers.any());
+		verify(animalRepository, never()).existsById(org.mockito.ArgumentMatchers.anyString());
+		verify(matchResultRepository, times(3)).save(org.mockito.ArgumentMatchers.any());
+	}
+
 	@SuppressWarnings("unchecked")
 	private ArgumentCaptor<List<MatchCandidateDto>> candidateListCaptor() {
 		return ArgumentCaptor.forClass(List.class);
@@ -113,5 +149,16 @@ class MatchServiceShelterEnrichmentTest {
 		result.setMatchedTags(java.util.Map.of("color", "brown"));
 		result.setConflictingTags(java.util.Map.of());
 		return result;
+	}
+
+	private MatchCandidateDto candidate(String type, String desertionNo, Long reportId) {
+		MatchCandidateDto candidate = new MatchCandidateDto();
+		candidate.setRank((short) 1);
+		candidate.setCandidateType(type);
+		candidate.setDesertionNo(desertionNo);
+		candidate.setCandidateReportId(reportId);
+		candidate.setVisualScore(new BigDecimal("0.5"));
+		candidate.setNearDuplicate(false);
+		return candidate;
 	}
 }
