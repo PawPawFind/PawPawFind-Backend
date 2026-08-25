@@ -54,8 +54,9 @@ admin.kakao-ids=1234567890,9876543210
 | 동작 | 규칙 |
 |------|------|
 | `POST /api/reports` | JWT 있으면 `userId` 저장, 없어도 생성 가능 |
+| `POST /api/report-photos`, `POST /api/report-features` | Public (목격 제보 등 비로그인 작성 흐름) |
 | `GET /api/reports/me` | JWT 필수 |
-| 제보·사진·특징 수정/삭제, `search-areas` | JWT + **작성자 또는 ADMIN** |
+| 제보·사진·특징 **수정/삭제**, `search-areas` | JWT + **작성자 또는 ADMIN** |
 | 그 외 조회·nearby·run-match 등 | Public |
 | `/api/internal/**` | 인증 없음 (네트워크로 제한) |
 

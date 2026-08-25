@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * 실종(LOST) / 목격(FOUND) 제보 API.
- * 수정/삭제는 본인 또는 ADMIN만 가능.
+ * 생성(제보·사진·특징)은 비로그인 가능. 수정/삭제는 본인 또는 ADMIN만 가능.
  */
 @RestController
 public class ReportController{
@@ -71,16 +71,9 @@ public class ReportController{
     // --- 사진 (URL만 저장) ---
 
     @PostMapping("/api/report-photos")
-    public ResponseEntity<?> createReportPhoto(
-            RequestEntity<ReportPhotos> requestEntity,
-            @RequestAttribute(value = JwtAuthFilter.USER_ID_ATTR, required = false) Long userId,
-            @RequestAttribute(value = JwtAuthFilter.ROLE_ATTR, required = false) String role) {
+    public ResponseEntity<?> createReportPhoto(RequestEntity<ReportPhotos> requestEntity) {
         try {
-            ReportPhotos body = requestEntity.getBody();
-            if (body != null && body.getReportId() != null) {
-                reportService.assertCanManageReport(body.getReportId(), userId, role);
-            }
-            ReportPhotos createdReportPhoto = reportService.createReportPhoto(body);
+            ReportPhotos createdReportPhoto = reportService.createReportPhoto(requestEntity.getBody());
             return ResponseEntity.ok(createdReportPhoto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -164,16 +157,9 @@ public class ReportController{
     // --- 특징 태그 ---
 
     @PostMapping("/api/report-features")
-    public ResponseEntity<?> createReportFeature(
-            RequestEntity<ReportFeatures> requestEntity,
-            @RequestAttribute(value = JwtAuthFilter.USER_ID_ATTR, required = false) Long userId,
-            @RequestAttribute(value = JwtAuthFilter.ROLE_ATTR, required = false) String role) {
+    public ResponseEntity<?> createReportFeature(RequestEntity<ReportFeatures> requestEntity) {
         try {
-            ReportFeatures body = requestEntity.getBody();
-            if (body != null && body.getReportId() != null) {
-                reportService.assertCanManageReport(body.getReportId(), userId, role);
-            }
-            ReportFeatures created = reportService.createReportFeature(body);
+            ReportFeatures created = reportService.createReportFeature(requestEntity.getBody());
             return ResponseEntity.ok(created);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

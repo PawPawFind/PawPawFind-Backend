@@ -89,7 +89,7 @@
 
 | Method | Path | Auth | 설명 |
 |--------|------|------|------|
-| `POST` | `/api/report-photos` | Owner/ADMIN (`reportId` 기준) | URL 등록 (제보당 최대 3장) → 비동기 embed |
+| `POST` | `/api/report-photos` | Public | URL 등록 (제보당 최대 3장) → 비동기 embed |
 | `GET` | `/api/report-photos?reportId=` | Public | 제보별 사진 |
 | `GET` | `/api/report-photos/{id}` | Public | 단건 |
 | `PUT` / `DELETE` | `/api/report-photos/{id}` | Owner/ADMIN | 수정 / 삭제 |
@@ -100,7 +100,7 @@
 
 | Method | Path | Auth | 설명 |
 |--------|------|------|------|
-| `POST` | `/api/report-features` | Owner/ADMIN | 태그 추가 (`털색` 최대 3) |
+| `POST` | `/api/report-features` | Public | 태그 추가 (`털색` 최대 3) |
 | `GET` | `/api/report-features?reportId=` | Public | 제보별 특징 |
 | `GET` | `/api/report-features/{id}` | Public | 단건 |
 | `PUT` / `DELETE` | `/api/report-features/{id}` | Owner/ADMIN | 수정 / 삭제 |
