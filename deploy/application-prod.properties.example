@@ -10,6 +10,12 @@ spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 
 kakao.rest-api-key=CHANGE_ME
 kakao.redirect-uri=http://www.pawpawfind.com/callback.html
+kakao.local.enabled=false
+kakao.local.base-url=https://dapi.kakao.com
+kakao.local.connect-timeout-millis=2000
+kakao.local.read-timeout-millis=5000
+kakao.local.batch-size=50
+kakao.local.max-attempts=3
 
 aws.region=ap-southeast-2
 aws.s3.bucket=pawpawfind-report-photos
@@ -28,4 +34,3 @@ admin.kakao-ids=
 # HS256 — 32자 이상 랜덤 문자열 (openssl rand -base64 48)
 jwt.secret=CHANGE_ME_TO_RANDOM_32_PLUS_CHARS
 jwt.expiration-ms=86400000
-

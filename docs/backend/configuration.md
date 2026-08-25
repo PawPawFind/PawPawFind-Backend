@@ -19,6 +19,12 @@
 | `animal.api.key` | 공공 유기동물 API 인증 | 인코딩키 |
 | `animal.api.url` | 공공 API URL | |
 | `kakao.rest-api-key` | 카카오 REST | |
+| `kakao.local.enabled` | 카카오 Local 주소 검색 활성화 | `false` |
+| `kakao.local.base-url` | 카카오 Local API 기준 URL | `https://dapi.kakao.com` |
+| `kakao.local.connect-timeout-millis` | 연결 timeout(ms) | `2000` |
+| `kakao.local.read-timeout-millis` | 응답 timeout(ms) | `5000` |
+| `kakao.local.batch-size` | 동기화 1회 최대 지오코딩 수 | `50` |
+| `kakao.local.max-attempts` | 주소별 최대 자동 시도 횟수 | `3` |
 | `kakao.redirect-uri` | OAuth redirect | FE 콜백과 일치 |
 | `admin.kakao-ids` | ADMIN 카카오 `provider_id` | 쉼표 구분 |
 | `jwt.secret` | JWT HS256 | 32자+ 권장 |
