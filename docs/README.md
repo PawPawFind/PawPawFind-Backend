@@ -3,8 +3,9 @@
 | 경로 | 설명 |
 |------|------|
 | **[backend/](./backend/README.md)** | Backend 현재 문서 (API · 인증 · DB · AI · 설정) |
-| [nearby-reports-api.md](./nearby-reports-api.md) | 주변 제보 API 상세 |
-| [search-area-api.md](./search-area-api.md) | 추천 수색 영역 API 상세 |
+| [backend/contributors.md](./backend/contributors.md) | 개발 담당 (강유진 · 김가윤) |
+| [nearby-reports-api.md](./nearby-reports-api.md) | 주변 제보 API 상세 (김가윤) |
+| [search-area-api.md](./search-area-api.md) | 추천 수색 영역 API 상세 (강유진) |
 | [backend-기능명세서.md](./backend-기능명세서.md) | 팀 기능표 (레거시) |
 | [backend-할일.md](./backend-할일.md) | 할 일 스냅샷 (레거시) |
 | [database.md](./database.md) | DB 초안 (레거시) → [backend/database.md](./backend/database.md) |

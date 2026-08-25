@@ -6,20 +6,23 @@
 | 기본 URL | 로컬 `http://127.0.0.1:8080` |
 | Swagger | `http://127.0.0.1:8080/swagger-ui.html` |
 | 기준일 | 2026-08-25 |
+| 담당 | [강유진 · 김가윤](./contributors.md) |
 
-실종·목격 제보, 보호소 공고, 카카오 로그인, AI 매칭·수색 영역·임베딩 연동을 담당한다.
+실종·목격 제보, 보호소 공고, 카카오 로그인, AI 매칭·수색 영역·임베딩 연동을 담당한다.  
+개발자별 범위는 [contributors.md](./contributors.md).
 
 ## 문서 목차
 
 | 문서 | 내용 |
 |------|------|
+| [contributors.md](./contributors.md) | 누가 무엇을 개발했는지 |
 | [api.md](./api.md) | HTTP API 전체 목록 · 인증 · 주요 필드 |
 | [auth.md](./auth.md) | 카카오 로그인 · JWT · USER/ADMIN |
 | [database.md](./database.md) | 테이블 · 관계 |
 | [ai-integration.md](./ai-integration.md) | BE ↔ AI 호출 · internal API |
 | [configuration.md](./configuration.md) | 설정 키 · 로컬/운영 |
-| [../nearby-reports-api.md](../nearby-reports-api.md) | 주변 제보 상세 |
-| [../search-area-api.md](../search-area-api.md) | 추천 수색 영역 상세 |
+| [../nearby-reports-api.md](../nearby-reports-api.md) | 주변 제보 상세 (담당: 김가윤) |
+| [../search-area-api.md](../search-area-api.md) | 추천 수색 영역 상세 (담당: 강유진) |
 
 레거시(팀 기능표·할 일): [backend-기능명세서.md](../backend-기능명세서.md) · [backend-할일.md](../backend-할일.md) — 과거 스냅샷. **현재 구현 기준은 이 폴더**를 본다.
 

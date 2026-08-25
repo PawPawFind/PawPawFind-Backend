@@ -112,12 +112,14 @@
 
 ## Nearby
 
+담당: **김가윤** (지도 · 주변 제보 UI/API)
+
 | Method | Path | Auth | 설명 |
 |--------|------|------|------|
 | `GET` | `/api/reports/nearby` | Public | 좌표 주변 OPEN 제보 |
 
 파라미터: `latitude`, `longitude` (필수), `radiusMeters`(기본 3000, 최대 20000), `reportType`, `species`, `page`, `size`  
-→ [nearby-reports-api.md](../nearby-reports-api.md)
+→ [nearby-reports-api.md](../nearby-reports-api.md) · [contributors.md](./contributors.md)
 
 ---
 

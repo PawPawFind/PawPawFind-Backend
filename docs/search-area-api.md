@@ -1,6 +1,9 @@
 # 추천 수색 영역 백엔드 연동 API
 
-백엔드 문서 목차: [docs/backend/](./backend/README.md) · AI 연동: [backend/ai-integration.md](./backend/ai-integration.md)
+| 항목 | 내용 |
+|------|------|
+| 담당 | **강유진** |
+| 목차 | [docs/backend/](./backend/README.md) · [AI 연동](./backend/ai-integration.md) · [담당 전체](./backend/contributors.md) |
 
 ## 호출
 
