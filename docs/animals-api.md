@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 |------|------|
 | 담당 | **강유진** |
-| 목차 | [BACKEND.md](../BACKEND.md) |
+| 목차 | [README.md](../README.md) |
 
 보호소(공공) 공고는 `animals` 테이블에 저장한다. PK는 공공 `desertionNo`다.
 
