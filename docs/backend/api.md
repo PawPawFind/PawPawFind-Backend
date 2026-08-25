@@ -125,12 +125,14 @@
 
 ## Search areas
 
+담당: **김가윤** (추천 수색 영역 BE 연동)
+
 | Method | Path | Auth | 설명 |
 |--------|------|------|------|
 | `POST` | `/api/reports/{reportId}/search-areas` | Owner/ADMIN | AI 추천 수색 영역 (body 없음, DB 미저장) |
 
 V1: `LOST` + `강아지`만.  
-→ [search-area-api.md](../search-area-api.md)
+→ [search-area-api.md](../search-area-api.md) · [contributors.md](./contributors.md)
 
 ---
 

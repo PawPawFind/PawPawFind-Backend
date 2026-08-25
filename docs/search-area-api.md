@@ -2,7 +2,7 @@
 
 | 항목 | 내용 |
 |------|------|
-| 담당 | **강유진** |
+| 담당 | **김가윤** (추천 수색 영역 BE 연동) |
 | 목차 | [docs/backend/](./backend/README.md) · [AI 연동](./backend/ai-integration.md) · [담당 전체](./backend/contributors.md) |
 
 ## 호출

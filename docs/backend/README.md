@@ -22,7 +22,7 @@
 | [ai-integration.md](./ai-integration.md) | BE ↔ AI 호출 · internal API |
 | [configuration.md](./configuration.md) | 설정 키 · 로컬/운영 |
 | [../nearby-reports-api.md](../nearby-reports-api.md) | 주변 제보 상세 (담당: 김가윤) |
-| [../search-area-api.md](../search-area-api.md) | 추천 수색 영역 상세 (담당: 강유진) |
+| [../search-area-api.md](../search-area-api.md) | 추천 수색 영역 상세 (담당: 김가윤) |
 
 레거시(팀 기능표·할 일): [backend-기능명세서.md](../backend-기능명세서.md) · [backend-할일.md](../backend-할일.md) — 과거 스냅샷. **현재 구현 기준은 이 폴더**를 본다.
 
