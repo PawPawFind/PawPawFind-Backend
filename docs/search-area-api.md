@@ -1,5 +1,7 @@
 # 추천 수색 영역 백엔드 연동 API
 
+백엔드 문서 목차: [docs/backend/](./backend/README.md) · AI 연동: [backend/ai-integration.md](./backend/ai-integration.md)
+
 ## 호출
 
 `POST /api/reports/{reportId}/search-areas`

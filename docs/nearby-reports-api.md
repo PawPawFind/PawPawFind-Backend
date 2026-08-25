@@ -1,5 +1,7 @@
 # 주변 제보 검색 API
 
+백엔드 문서 목차: [docs/backend/](./backend/README.md)
+
 ## 호출
 
 `GET /api/reports/nearby`
