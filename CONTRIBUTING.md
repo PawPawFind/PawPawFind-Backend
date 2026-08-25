@@ -2,7 +2,7 @@
 
 PawPawFind Backend의 일관된 협업을 위한 GitHub 작업 규칙을 정의합니다.
 
-API·인증·DB·AI 연동 문서는 [docs/backend/](./docs/backend/README.md)를 본다.
+API·인증·DB·배포 문서는 [BACKEND.md](./BACKEND.md)를 본다.
 
 ## 1. 브랜치 전략
 
