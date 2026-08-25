@@ -1,9 +1,12 @@
-# 포포파인드 DB 스키마
+# 포포파인드 DB 스키마 (레거시 초안)
+
+> **최신 스키마:** [docs/backend/database.md](./backend/database.md)  
+> 아래는 `users`·임베딩·매칭 테이블 이전 초안이다.
 
 | 항목 | 내용 |
 |------|------|
-| 문서 버전 | 1.0 (제보 v6 기준) |
-| 관련 문서 | [기능 명세서](./backend-기능명세서.md) · [BE 할 일](./backend-할일.md) |
+| 문서 버전 | 1.0 (제보 v6 기준, 레거시) |
+| 관련 문서 | [backend/database.md](./backend/database.md) · [기능 명세서](./backend-기능명세서.md) |
 | 현재 DB | H2 in-memory `jdbc:h2:mem:pawpawfind` / 사용자 `sa` / 비밀번호 없음 |
 | 테이블 생성 | JPA `ddl-auto=update` (엔티티가 곧 스키마) |
 

@@ -1,5 +1,10 @@
 # 주변 제보 검색 API
 
+| 항목 | 내용 |
+|------|------|
+| 담당 | **김가윤** (지도 · 지도 주변 제보) |
+| 목차 | [docs/backend/](./backend/README.md) · [담당 전체](./backend/contributors.md) |
+
 ## 호출
 
 `GET /api/reports/nearby`
