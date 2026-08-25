@@ -46,6 +46,7 @@ public class MatchService {
 	private final ReportPhotoRepository reportPhotoRepository;
 	private final ReportFeatureRepository reportFeatureRepository;
 	private final AnimalRepository animalRepository;
+	private final MatchCandidateShelterAssembler shelterAssembler;
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final RestClient restClient;
 
@@ -58,13 +59,15 @@ public class MatchService {
 			ReportRepository reportRepository,
 			ReportPhotoRepository reportPhotoRepository,
 			ReportFeatureRepository reportFeatureRepository,
-			AnimalRepository animalRepository) {
+			AnimalRepository animalRepository,
+			MatchCandidateShelterAssembler shelterAssembler) {
 		this.matchRunRepository = matchRunRepository;
 		this.matchResultRepository = matchResultRepository;
 		this.reportRepository = reportRepository;
 		this.reportPhotoRepository = reportPhotoRepository;
 		this.reportFeatureRepository = reportFeatureRepository;
 		this.animalRepository = animalRepository;
+		this.shelterAssembler = shelterAssembler;
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		this.restClient = RestClient.builder().requestFactory(requestFactory).build();
 	}
@@ -204,9 +207,8 @@ public class MatchService {
 		List<MatchResult> rows = matchResultRepository.findByMatchRunIdOrderByRankAsc(run.getId());
 		List<MatchCandidateDto> results = rows.stream()
 				.map(this::toDto)
-				.filter(this::isResolvableCandidate)
 				.collect(Collectors.toList());
-		// orphan 제외 후 rank를 1..N으로 다시 매긴다
+		// 저장 시 검증된 순서를 유지하며 rank를 1..N으로 정규화한다.
 		for (int i = 0; i < results.size(); i++) {
 			results.get(i).setRank((short) (i + 1));
 		}
@@ -214,6 +216,7 @@ public class MatchService {
 		if (effectiveLimit < results.size()) {
 			results = new ArrayList<>(results.subList(0, effectiveLimit));
 		}
+		shelterAssembler.enrich(results);
 
 		MatchQueryResponse response = new MatchQueryResponse();
 		response.setMatchRunId(run.getId());
