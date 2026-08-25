@@ -3,7 +3,12 @@ package com.pawpawfind.backend.service;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,14 +24,37 @@ import com.pawpawfind.backend.repository.AnimalRepository;
  */
 @Service
 public class AbandonedService {
+	private static final Logger log = LoggerFactory.getLogger(AbandonedService.class);
 	private final AnimalRepository animalRepository;
 	private final AnimalEmbedTriggerService animalEmbedTriggerService;
+	private final ShelterLocationService shelterLocationService;
+	private final ShelterGeocodingService shelterGeocodingService;
+	private final ShelterIdentity shelterIdentity;
+	private final RestClient restClient;
 
+	@Autowired
 	public AbandonedService(
 			AnimalRepository animalRepository,
-			AnimalEmbedTriggerService animalEmbedTriggerService) {
+			AnimalEmbedTriggerService animalEmbedTriggerService,
+			ShelterLocationService shelterLocationService,
+			ShelterGeocodingService shelterGeocodingService,
+			ShelterIdentity shelterIdentity) {
+		this(animalRepository, animalEmbedTriggerService, shelterLocationService,
+				shelterGeocodingService, shelterIdentity, RestClient.create());
+	}
+
+	AbandonedService(AnimalRepository animalRepository,
+			AnimalEmbedTriggerService animalEmbedTriggerService,
+			ShelterLocationService shelterLocationService,
+			ShelterGeocodingService shelterGeocodingService,
+			ShelterIdentity shelterIdentity,
+			RestClient restClient) {
 		this.animalRepository = animalRepository;
 		this.animalEmbedTriggerService = animalEmbedTriggerService;
+		this.shelterLocationService = shelterLocationService;
+		this.shelterGeocodingService = shelterGeocodingService;
+		this.shelterIdentity = shelterIdentity;
+		this.restClient = restClient;
 	}
 
 	@Value("${animal.api.key}")
@@ -35,13 +63,12 @@ public class AbandonedService {
 	@Value("${animal.api.url}")
 	private String apiUrl;
 
-	private final RestClient restClient = RestClient.create();
-
 	public Object syncAbandonedAnimals() {
 		int pageNo = 1;
 		int pageSize = 1000;
 		int totalCount = 0;
 		int saved = 0;
+		Set<String> synchronizedShelters = new HashSet<>();
 
 		while (true) {
 			URI uri = URI.create(apiUrl
@@ -96,6 +123,10 @@ public class AbandonedService {
 				row.setSourceUpdTm((String) animal.get("updTm"));
 				Animal savedAnimal = animalRepository.save(row);
 				animalEmbedTriggerService.triggerIfMissing(savedAnimal);
+				shelterIdentity.resolve(savedAnimal.getCareRegNo(), savedAnimal.getCareAddr())
+						.map(ShelterIdentity.Values::shelterKey)
+						.filter(synchronizedShelters::add)
+						.ifPresent(key -> upsertShelterSafely(savedAnimal, key));
 			}
 
 			saved = saved + itemList.size();
@@ -106,8 +137,22 @@ public class AbandonedService {
 			pageNo = pageNo + 1;
 		}
 
-        return animalRepository.findAll();
+		try {
+			shelterGeocodingService.processBatch();
+		} catch (RuntimeException exception) {
+			log.warn("Shelter geocoding batch failed after animal synchronization");
+		}
 
+		return animalRepository.findAll();
+
+	}
+
+	private void upsertShelterSafely(Animal animal, String shelterKey) {
+		try {
+			shelterLocationService.upsert(animal);
+		} catch (RuntimeException exception) {
+			log.warn("Shelter location upsert failed for shelterKey={}", shelterKey);
+		}
 	}
 
 	/** 보호소 공고 동기화. 1시간마다 실행 후 missing embed 트리거. */
