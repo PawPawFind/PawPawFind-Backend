@@ -22,6 +22,7 @@ public class MatchCandidateDto {
 	private Map<String, Object> conflictingTags;
 	private String galleryId;
 	private String imageUrl;
+	private MatchShelterDto shelter;
 
 	public Short getRank() {
 		return rank;
@@ -133,5 +134,13 @@ public class MatchCandidateDto {
 
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
+	}
+
+	public MatchShelterDto getShelter() {
+		return shelter;
+	}
+
+	public void setShelter(MatchShelterDto shelter) {
+		this.shelter = shelter;
 	}
 }

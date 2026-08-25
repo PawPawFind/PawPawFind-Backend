@@ -14,6 +14,8 @@ public interface ShelterLocationRepository extends JpaRepository<ShelterLocation
 
 	Optional<ShelterLocation> findByShelterKey(String shelterKey);
 
+	List<ShelterLocation> findAllByShelterKeyIn(Collection<String> shelterKeys);
+
 	List<ShelterLocation> findByGeocodeStatusInAndAttemptCountLessThanOrderByIdAsc(
 			Collection<GeocodeStatus> statuses, int maxAttempts, Pageable pageable);
 }

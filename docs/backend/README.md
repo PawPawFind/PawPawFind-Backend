@@ -22,6 +22,7 @@
 | [ai-integration.md](./ai-integration.md) | BE ↔ AI 호출 · internal API |
 | [configuration.md](./configuration.md) | 설정 키 · 로컬/운영 |
 | [shelter-geocoding.md](./shelter-geocoding.md) | 보호소 위치 저장 · 카카오 주소 지오코딩 |
+| [match-shelter-location.md](./match-shelter-location.md) | 매칭 후보 보호소 정보 · 좌표 응답 |
 | [../nearby-reports-api.md](../nearby-reports-api.md) | 주변 제보 상세 (담당: 김가윤) |
 | [../search-area-api.md](../search-area-api.md) | 추천 수색 영역 상세 (담당: 김가윤) |
 
