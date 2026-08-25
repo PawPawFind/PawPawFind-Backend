@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 |------|------|
 | 담당 | **강유진** |
-| 목차 | [BACKEND.md](../BACKEND.md) · [매칭 API](./match-api.md) |
+| 목차 | [README.md](../README.md) · [매칭 API](./match-api.md) |
 
 AI batch job과 `/match`용 갤러리 export를 위한 **internal** API다.  
 컨트롤러에 JWT/API Key 검사가 **없다**. 같은 VPC·방화벽으로만 노출하는 전제다.

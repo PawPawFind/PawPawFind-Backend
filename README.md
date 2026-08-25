@@ -1,7 +1,7 @@
 # PawPawFind Backend
 
-현재 구현된 코드(`backend/`)를 기준으로 작성한 백엔드 문서입니다.  
-기준 브랜치: `develop` (문서 작성 시점).
+이 저장소(PawPawFind-Backend)의 README입니다.  
+현재 구현된 코드(`backend/`)를 기준으로 작성했습니다. 기준 브랜치: `develop`.
 
 관련 기획 스냅샷: [docs/backend-기능명세서.md](./docs/backend-기능명세서.md)
 
@@ -95,7 +95,7 @@ flowchart LR
 
 ```text
 pawpawfind-/                          # Backend 저장소 루트
-├── BACKEND.md
+├── README.md
 ├── CONTRIBUTING.md
 ├── backend/
 │   ├── build.gradle

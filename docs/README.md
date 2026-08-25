@@ -1,6 +1,6 @@
 # Docs
 
-전체 백엔드 문서: [../BACKEND.md](../BACKEND.md)
+전체 백엔드 문서: [../README.md](../README.md)
 
 | 파일 | 담당 | 설명 |
 |------|------|------|

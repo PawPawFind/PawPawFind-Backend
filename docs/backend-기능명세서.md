@@ -1,23 +1,21 @@
 # 포포파인드(PawPawFind) 백엔드 기능 명세서
 
-> **현재 구현 문서:** [docs/backend/](./backend/README.md) (API · 인증 · DB · AI · 설정)  
-> 이 파일은 팀 기능표·초기 기획 스냅샷이다. API/스키마가 어긋나면 `docs/backend/`를 따른다.
+> **현재 구현 문서:** [README.md](../README.md) (API · 인증 · DB · AI · 설정)  
+> 이 파일은 팀 기능표·초기 기획 스냅샷이다. API/스키마가 어긋나면 `README.md`를 따른다.
 
 | 항목 | 내용 |
 |------|------|
 | 문서 버전 | 1.0 (레거시) |
 | 대상 | 백엔드 (Spring Boot) |
-| 관련 문서 | [backend/](./backend/README.md) · [DB(레거시)](./database.md) · [BE 할 일](./backend-할일.md) |
+| 관련 문서 | [README.md](../README.md) · [nearby](./nearby-reports-api.md) · [search-area](./search-area-api.md) |
 | 로컬 | `http://127.0.0.1:8080` (https 아님) · Swagger `http://127.0.0.1:8080/swagger-ui.html` |
 
 ---
 
 ## 0. 문서 안내
 
-- **docs/backend/:** 현재 코드 기준 API·인증·DB·AI 연동
+- **README.md:** 현재 코드 기준 API·인증·DB·AI 연동
 - **이 파일:** 팀 기능표·초기 화면 흐름 (무엇을 만들려 했는지)
-- **database.md:** 초기 스키마 초안 (users·매칭·임베딩 이전)
-- **backend-할일.md:** 과거 할 일 목록
 
 ---
 
