@@ -62,6 +62,25 @@ class SearchAreaAiClientTest {
 	}
 
 	@Test
+	void serializesNormalizedKoreanSizeInRequestBody() {
+		server.expect(once(), requestTo("http://ai.test/search-areas"))
+				.andExpect(method(POST))
+				.andExpect(content().json("""
+						{"reportId":14,"size":"소형"}
+						""", false))
+				.andRespond(withSuccess("""
+						{"reportId":14,"areas":[]}
+						""", MediaType.APPLICATION_JSON));
+
+		SearchAreaAiRequest request = request();
+		request.setSize("소형");
+
+		client.recommend(request);
+
+		server.verify();
+	}
+
+	@Test
 	void mapsAi422To422AndOther4xx5xxTo502() {
 		assertStatus(withStatus(HttpStatus.UNPROCESSABLE_ENTITY), HttpStatus.UNPROCESSABLE_ENTITY);
 		setUp();

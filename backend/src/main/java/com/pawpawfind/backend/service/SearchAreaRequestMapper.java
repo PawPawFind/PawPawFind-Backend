@@ -18,6 +18,10 @@ import com.pawpawfind.backend.entity.Reports;
 public class SearchAreaRequestMapper {
 
 	private static final String UNKNOWN = "UNKNOWN";
+	private static final Map<String, String> SIZE_CODE_TO_AI = Map.of(
+			"SMALL", "소형",
+			"MEDIUM", "중형",
+			"LARGE", "대형");
 	private static final Map<String, Set<String>> ALLOWED_VALUES = Map.of(
 			"활동량", Set.of("LOW", "MEDIUM", "HIGH", UNKNOWN),
 			"낯선사람반응", Set.of("APPROACH", "NEUTRAL", "AVOID", UNKNOWN),
@@ -39,7 +43,7 @@ public class SearchAreaRequestMapper {
 		SearchAreaAiRequest request = new SearchAreaAiRequest();
 		request.setReportId(report.getReportId());
 		request.setSpecies(report.getSpecies());
-		request.setSize(report.getSize());
+		request.setSize(normalizeSize(report.getSize()));
 		request.setEventDate(report.getEventDate());
 		request.setEventHour(report.getEventHour());
 		request.setLatitude(report.getLatitude());
@@ -48,6 +52,21 @@ public class SearchAreaRequestMapper {
 		request.setDescription(report.getDescription());
 		request.setBehaviorProfile(behavior);
 		return request;
+	}
+
+	/**
+	 * BE/DB의 크기 코드({@code SMALL}, {@code MEDIUM}, {@code LARGE})를 AI 계약이 요구하는
+	 * 한글 크기({@code 소형}, {@code 중형}, {@code 대형})로 변환한다.
+	 * 이미 한글 크기라면 그대로 유지하고, 매핑되지 않는 값은 기존 AI 오류 처리 흐름이 그대로
+	 * 처리하도록 원본 값을 그대로 전달한다.
+	 */
+	private String normalizeSize(String size) {
+		if (size == null) {
+			return null;
+		}
+		String trimmed = size.trim();
+		String normalized = SIZE_CODE_TO_AI.get(trimmed.toUpperCase(Locale.ROOT));
+		return normalized != null ? normalized : trimmed;
 	}
 
 	private Map<String, ReportFeatures> latestBehaviorFeatures(List<ReportFeatures> features) {

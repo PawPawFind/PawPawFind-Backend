@@ -24,13 +24,40 @@ class SearchAreaRequestMapperTest {
 
 		assertThat(request.getReportId()).isEqualTo(14L);
 		assertThat(request.getSpecies()).isEqualTo("강아지");
-		assertThat(request.getSize()).isEqualTo("SMALL");
+		assertThat(request.getSize()).isEqualTo("소형");
 		assertThat(request.getEventDate()).isEqualTo(LocalDate.of(2026, 8, 24));
 		assertThat(request.getEventHour()).isNull();
 		assertThat(request.getLatitude()).isEqualTo(37.5665);
 		assertThat(request.getLongitude()).isEqualTo(126.9780);
 		assertThat(request.getHappenPlace()).isEqualTo("서울광장");
 		assertThat(request.getDescription()).isEqualTo("빨간 목줄");
+	}
+
+	@Test
+	void mapsEnglishSizeCodesToAiKoreanContract() {
+		assertThat(mapWithSize("SMALL")).isEqualTo("소형");
+		assertThat(mapWithSize("MEDIUM")).isEqualTo("중형");
+		assertThat(mapWithSize("LARGE")).isEqualTo("대형");
+	}
+
+	@Test
+	void keepsKoreanSizeValuesUnchanged() {
+		assertThat(mapWithSize("소형")).isEqualTo("소형");
+		assertThat(mapWithSize("중형")).isEqualTo("중형");
+		assertThat(mapWithSize("대형")).isEqualTo("대형");
+	}
+
+	@Test
+	void normalizesSizeCodeCaseAndSurroundingWhitespace() {
+		assertThat(mapWithSize(" small ")).isEqualTo("소형");
+		assertThat(mapWithSize(" MeDiUm ")).isEqualTo("중형");
+		assertThat(mapWithSize(" large ")).isEqualTo("대형");
+	}
+
+	private String mapWithSize(String size) {
+		Reports report = report();
+		report.setSize(size);
+		return mapper.map(report, List.of()).getSize();
 	}
 
 	@Test
