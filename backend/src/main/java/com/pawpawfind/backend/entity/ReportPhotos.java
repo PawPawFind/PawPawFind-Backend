@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -13,7 +14,10 @@ import jakarta.persistence.Table;
  * 한 제보에 여러 장, sortOrder로 순서를 둔다.
  */
 @Entity
-@Table(name = "report_photos")
+@Table(
+    name = "report_photos",
+    indexes = @Index(name = "idx_report_photos_report_id", columnList = "report_id")
+)
 public class ReportPhotos {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

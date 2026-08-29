@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -14,7 +15,15 @@ import jakarta.persistence.Table;
  * 입양/봉사(adptn*, srvc*) 필드는 저장하지 않는다.
  */
 @Entity
-@Table(name = "animals")
+@Table(
+	name = "animals",
+	indexes = {
+		@Index(name = "idx_animals_updated_at", columnList = "updated_at"),
+		@Index(name = "idx_animals_source_upd_tm", columnList = "source_upd_tm"),
+		@Index(name = "idx_animals_up_kind_cd", columnList = "up_kind_cd"),
+		@Index(name = "idx_animals_notice_edt", columnList = "notice_edt")
+	}
+)
 public class Animal {
 
 	/** 공공 고유번호. 우리 DB에서 발급하지 않는다. */

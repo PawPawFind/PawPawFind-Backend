@@ -413,6 +413,8 @@ Swagger: `http://127.0.0.1:8080/swagger-ui.html` (`SwaggerConfig` bearerAuth)
 운영: PostgreSQL (`deploy/application-prod.properties.example`)  
 스키마: `spring.jpa.hibernate.ddl-auto=update`
 
+컬럼 정의, 인덱스·제약 목록, dbdiagram.io용 DBML은 [docs/database.md](./docs/database.md)를 본다.
+
 ### ER (논리 관계)
 
 ```mermaid

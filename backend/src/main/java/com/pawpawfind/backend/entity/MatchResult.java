@@ -12,15 +12,28 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 /**
  * AI 매칭 Top-N 후보 1행. SearchMatch 1건 = DB 1행.
  */
 @Entity
-@Table(name = "match_results")
+@Table(
+	name = "match_results",
+	uniqueConstraints = @UniqueConstraint(
+		name = "uk_match_results_run_rank",
+		columnNames = {"match_run_id", "rank"}
+	),
+	indexes = {
+		@Index(name = "idx_match_results_run_id", columnList = "match_run_id"),
+		@Index(name = "idx_match_results_desertion_no", columnList = "desertion_no"),
+		@Index(name = "idx_match_results_candidate_report", columnList = "candidate_report_id")
+	}
+)
 public class MatchResult {
 
 	public static final String CANDIDATE_SHELTER = "SHELTER";

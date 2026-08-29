@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -17,7 +18,14 @@ import jakarta.persistence.Table;
  * 털색: report_features (category=털색, keyword=색상명, 1색=1행).
  */
 @Entity
-@Table(name = "reports")
+@Table(
+	name = "reports",
+	indexes = {
+		@Index(name = "idx_reports_user_id", columnList = "user_id"),
+		@Index(name = "idx_reports_report_type", columnList = "report_type"),
+		@Index(name = "idx_reports_created_at", columnList = "created_at")
+	}
+)
 public class Reports {
 
 	@Id
