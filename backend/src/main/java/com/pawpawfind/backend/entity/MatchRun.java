@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -14,7 +15,13 @@ import jakarta.persistence.Table;
  * 제보 1건 기준 AI 매칭 1회 실행 기록.
  */
 @Entity
-@Table(name = "match_runs")
+@Table(
+	name = "match_runs",
+	indexes = {
+		@Index(name = "idx_match_runs_report_id", columnList = "report_id"),
+		@Index(name = "idx_match_runs_report_created", columnList = "report_id, created_at")
+	}
+)
 public class MatchRun {
 
 	@Id

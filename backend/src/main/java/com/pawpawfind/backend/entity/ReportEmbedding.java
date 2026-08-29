@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -15,7 +16,10 @@ import jakarta.persistence.Table;
  * 제보 사진별 Re-ID 벡터 참조. 매칭 쿼리용.
  */
 @Entity
-@Table(name = "report_embeddings")
+@Table(
+	name = "report_embeddings",
+	indexes = @Index(name = "idx_report_embeddings_report_id", columnList = "report_id")
+)
 public class ReportEmbedding {
 
 	@Id

@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 
 /**
@@ -12,7 +13,13 @@ import jakarta.persistence.Table;
  * 예: category=털색, keyword=흰색
  */
 @Entity
-@Table(name = "report_features")
+@Table(
+	name = "report_features",
+	indexes = {
+		@Index(name = "idx_report_features_report_id", columnList = "report_id"),
+		@Index(name = "idx_report_features_report_category", columnList = "report_id, category")
+	}
+)
 public class ReportFeatures {
 
 	@Id
