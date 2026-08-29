@@ -21,6 +21,26 @@
 
 ---
 
+## 기여자
+
+| 역할 | 담당자 | 주요 담당 범위 |
+|------|--------|----------------|
+| Backend · Infrastructure | 강유진 | Spring Boot REST API · JWT 인증 · DB 설계 · AWS 인프라 구축 · CI/CD 자동화 · 서버 배포 |
+| Location-based Features (AI + BE) | 김가윤 | 추천 수색 영역 알고리즘 · 주변 제보 검색 · 보호소 지오코딩 · 프로젝트 초기 설정 |
+| AI Matching Model | 주가빈 | YOLO 객체 검출 · DINOv2 임베딩 · 이미지 유사도 검색 · 재정렬(Reranking) |
+| Frontend | 신주현 | React 화면 전반 구현 · 디자인 시스템 · UI/UX · API 연동 · 사용자 인터랙션 |
+| Map Feature | 박소민 | Kakao Maps API 연동 · 지도 기반 기능 구현 |
+
+프로젝트는 세 개의 저장소로 나뉘어 있다.
+
+| 저장소 | 내용 |
+|--------|------|
+| PawPawFind-Backend (현재 저장소) | Spring Boot API 서버 |
+| PawPawFind-AI | FastAPI 기반 매칭 · 수색 영역 추천 서버 |
+| PawPawFind-Frontend | React 웹 클라이언트 |
+
+---
+
 ## 1. 프로젝트 개요
 
 ### 백엔드의 역할
