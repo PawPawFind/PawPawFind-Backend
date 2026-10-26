@@ -23,7 +23,7 @@ JWT가 있으면 `userId`를 저장하고, 없어도 생성된다.
 | reportType | 예 | `LOST` 또는 `FOUND` |
 | title | 아니요 | FOUND용 제목 |
 | species | 예 | 예: `강아지`, `고양이` (AI 연동 시 한글 권장) |
-| size | 예 | 예: `소형`, `중형`, `대형` |
+| size | 아니요 | `소형`, `중형`, `대형`. 모르면 null |
 | eventDate | 예 | 실종/목격일 |
 | eventHour | 아니요 | 0–23, 모르면 null |
 | happenPlace | 예 | 장소 문자열 |

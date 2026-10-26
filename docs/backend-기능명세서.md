@@ -169,7 +169,7 @@ JSON 필드명은 **camelCase** (`eventDate`, `reportType`).
 | `reportType` | Y | `LOST` / `FOUND` |
 | `title` | N | FOUND만 |
 | `species` | Y | 강아지 / 고양이 |
-| `size` | Y | 소형 등 |
+| `size` | N | 소형 / 중형 / 대형. 모르면 null |
 | `color` | Y | 색상 |
 | `eventDate` | Y | `YYYY-MM-DD` |
 | `eventHour` | N | 0~23 |
