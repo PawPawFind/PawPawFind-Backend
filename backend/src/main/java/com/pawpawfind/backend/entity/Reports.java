@@ -40,7 +40,7 @@ public class Reports {
 	@Column(name = "species", length = 20, nullable = false)
 	private String species;
 
-	@Column(name = "size", length = 10, nullable = false)
+	@Column(name = "size", length = 10, nullable = true)
 	private String size;
 
 	/** 실종일 또는 목격일. */
