@@ -8,6 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.pawpawfind.backend.dto.SearchAreaAiRequest;
 import com.pawpawfind.backend.dto.SearchAreaResponse;
+import com.pawpawfind.backend.dto.SearchAreaCompareResponse;
 import com.pawpawfind.backend.entity.ReportFeatures;
 import com.pawpawfind.backend.entity.Reports;
 import com.pawpawfind.backend.repository.ReportFeatureRepository;
@@ -32,6 +33,14 @@ public class SearchAreaService {
 	}
 
 	public SearchAreaResponse recommend(Long reportId, Long userId, String role) {
+		return aiClient.recommend(prepareRequest(reportId, userId, role));
+	}
+
+	public SearchAreaCompareResponse compare(Long reportId, Long userId, String role) {
+		return aiClient.compare(prepareRequest(reportId, userId, role));
+	}
+
+	private SearchAreaAiRequest prepareRequest(Long reportId, Long userId, String role) {
 		reportService.assertCanManageReport(reportId, userId, role);
 		Reports report = reportService.getReport(reportId);
 		if (report == null) {
@@ -46,7 +55,6 @@ public class SearchAreaService {
 					"강아지 신고만 추천 수색 영역을 요청할 수 있습니다.");
 		}
 		List<ReportFeatures> features = reportFeatureRepository.findByReportId(reportId);
-		SearchAreaAiRequest request = requestMapper.map(report, features);
-		return aiClient.recommend(request);
+		return requestMapper.map(report, features);
 	}
 }
