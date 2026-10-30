@@ -14,8 +14,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.pawpawfind.backend.dto.SearchAreaAiRequest;
 import com.pawpawfind.backend.dto.SearchAreaResponse;
+import com.pawpawfind.backend.dto.SearchAreaCompareResponse;
 
-/** AI POST /search-areas 호출과 외부 오류 변환만 담당한다. */
+/** AI 추천·비교 API 호출과 외부 오류 변환만 담당한다. */
 @Component
 public class SearchAreaAiClient {
 
@@ -26,20 +27,28 @@ public class SearchAreaAiClient {
 	}
 
 	public SearchAreaResponse recommend(SearchAreaAiRequest request) {
+		SearchAreaResponse response = post("/search-areas", request, SearchAreaResponse.class);
+		if (response == null || response.getReportId() == null
+				|| !Objects.equals(response.getReportId(), request.getReportId())
+				|| response.getAreas() == null) {
+			throw badGateway();
+		}
+		return response;
+	}
+
+	public SearchAreaCompareResponse compare(SearchAreaAiRequest request) {
+		SearchAreaCompareResponse response = post("/search-areas/compare", request, SearchAreaCompareResponse.class);
+		if (!SearchAreaCompareValidator.isValid(response, request.getReportId())) {
+			throw badGateway();
+		}
+		return response;
+	}
+
+	private <T> T post(String path, SearchAreaAiRequest request, Class<T> responseType) {
 		try {
-			SearchAreaResponse response = restClient.post()
-					.uri("/search-areas")
-					.contentType(MediaType.APPLICATION_JSON)
-					.accept(MediaType.APPLICATION_JSON)
-					.body(request)
-					.retrieve()
-					.body(SearchAreaResponse.class);
-			if (response == null || response.getReportId() == null
-					|| !Objects.equals(response.getReportId(), request.getReportId())
-					|| response.getAreas() == null) {
-				throw badGateway();
-			}
-			return response;
+			return restClient.post().uri(path)
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+					.body(request).retrieve().body(responseType);
 		} catch (RestClientResponseException exception) {
 			if (exception.getStatusCode().value() == 422) {
 				throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,

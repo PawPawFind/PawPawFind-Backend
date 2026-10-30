@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pawpawfind.backend.config.JwtAuthFilter;
 import com.pawpawfind.backend.dto.SearchAreaResponse;
+import com.pawpawfind.backend.dto.SearchAreaCompareResponse;
 import com.pawpawfind.backend.service.SearchAreaService;
 
 @RestController
@@ -25,5 +26,13 @@ public class SearchAreaController {
 			@RequestAttribute(value = JwtAuthFilter.USER_ID_ATTR, required = false) Long userId,
 			@RequestAttribute(value = JwtAuthFilter.ROLE_ATTR, required = false) String role) {
 		return ResponseEntity.ok(searchAreaService.recommend(reportId, userId, role));
+	}
+
+	@PostMapping("/api/reports/{reportId}/search-areas/compare")
+	public ResponseEntity<SearchAreaCompareResponse> compare(
+			@PathVariable Long reportId,
+			@RequestAttribute(value = JwtAuthFilter.USER_ID_ATTR, required = false) Long userId,
+			@RequestAttribute(value = JwtAuthFilter.ROLE_ATTR, required = false) String role) {
+		return ResponseEntity.ok(searchAreaService.compare(reportId, userId, role));
 	}
 }
